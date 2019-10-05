@@ -14,6 +14,8 @@ public class Building : VehiculTarget
     [SerializeField] protected GameObject m_warning = null;
 
     float m_nodeDiameter = 2;
+
+    public bool m_sellProduction = true;
     #endregion
     #region MonoFunctions
     protected override void Awake()

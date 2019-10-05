@@ -17,6 +17,8 @@ public class SkyTrash : VehiculTarget
         m_MaxNumberOfTrash = mNumberOfTrash;
 
         GameManager.inst.mSkyTrashs.Add(this);
+
+        transform.localEulerAngles = new Vector3(0, 90 * Random.Range(0, 4), 0);
     }
     protected override void VehiculArrivedHere(Vehicul v)
     {
@@ -28,15 +30,7 @@ public class SkyTrash : VehiculTarget
     {
         yield return new WaitForSeconds(time);
 
-        //find nearest sorter
-        Building b = GameManager.FindNearestObject(GameManager.inst.mSorters, transform.position);
-        v.AssignPath(b.mCrtDoorNode.worldPosition);
-        v.pathFinished += VehiculArrivedToDestination;
-    }
-    protected override void VehiculArrivedToDestination(Vehicul v)
-    {
-        mNumberOfTrash--;
-        transform.localScale = Vector3.one * ((mNumberOfTrash / (float)m_MaxNumberOfTrash) * .5f + .5f);
+        transform.localScale = Vector3.one * (((mNumberOfTrash - 1) / (float)m_MaxNumberOfTrash) * .5f + .5f);
 
         if (mNumberOfTrash <= 0)
         {
@@ -45,6 +39,18 @@ public class SkyTrash : VehiculTarget
             s.AssignVehicul(v);
             Destroy(gameObject, .1f);
         }
-        else base.VehiculArrivedToDestination(v);
+        else
+        {
+            //find nearest sorter
+            Building b = GameManager.FindNearestObject(GameManager.inst.mSorters, transform.position);
+            v.AssignPath(b.mCrtDoorNode.worldPosition);
+            v.pathFinished += VehiculArrivedToDestination;
+        }
+    }
+    protected override void VehiculArrivedToDestination(Vehicul v)
+    {
+        mNumberOfTrash--;
+
+        base.VehiculArrivedToDestination(v);
     }
 }
