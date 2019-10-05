@@ -105,3 +105,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7b40c8f28f027540a8b54a46ab8ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_name: Sky Trash
+  m_description: Savage depot of all kind of trash (even a working microwave)
+  mNumberOfTrash: 6

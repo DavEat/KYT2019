@@ -6,6 +6,8 @@ public class Selectable : MonoBehaviour
 {
     #region Vars
     public bool selected { get { return SelectionManager.selection == this; } }
+
+    [SerializeField] protected string m_name = "", m_description = "";
     #endregion
     #region MonoFunctions
     protected virtual void Awake()
@@ -22,10 +24,12 @@ public class Selectable : MonoBehaviour
     public virtual void Selection()
     {
         //print(name + " select");
+        CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, null, null, true);
     }
     public virtual void Diselection()
     {
         //print(name + " diselect");
+        CanvasManager.inst.mBuildingInfo.HideItemInfos();
     }
     #endregion
 }

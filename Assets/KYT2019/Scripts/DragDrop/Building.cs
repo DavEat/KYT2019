@@ -87,7 +87,8 @@ public class Building : VehiculTarget
     }
     public override void Selection()
     {
-        base.Selection();
+        //base.Selection();
+        CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, null, null, true);
     }
     public override void Diselection()
     {
