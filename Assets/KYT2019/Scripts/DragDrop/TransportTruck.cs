@@ -4,38 +4,84 @@ using UnityEngine;
 
 public class TransportTruck : Vehicul
 {
-    protected bool m_goLoading;
+    protected bool m_goLoading = true;
     protected Goods m_Load;
+
+    Goods.GoodsType m_targetResourceTypeForCollect;
+    public Building mMasterBuilding;
 
     protected override void Start()
     {
-        m_goLoading = true;
-        //Add check if building have object to load
-        Building b = GameManager.inst.FindLonguestWaitingBuilding();
-        //if (b != null)
-        AssignPath(b.mCrtDoorNode.worldPosition, b);
+
     }
-    protected override void PathCompleted()
+    public void AssignBuilding(Building b)
     {
-        print("pathfinish");
-        m_moving = false;
-        ArrowDst.inst.Unassign();
-        
+        mMasterBuilding = b;
         if (m_goLoading)
         {
-            m_goLoading = false;
-            m_Load = mBuilding.GetResources();
+            /*if (b.m_sellProduction && b.HaveProductionInStock())
+            {
+                AssignPath(b.mCrtDoorNode.worldPosition, b);
 
-            Building b = GameManager.inst.FindLonguestWaitingBuilding(m_Load.type);
-            AssignPath(b.mCrtDoorNode.worldPosition, b);
+            }
+            else*/
+            print("aa");
+            if (b.DontHaveNeedInStock())
+            {
+                print("bb");
+                StartCoroutine(FindResourceInABuilding(b));
+            }
         }
-        else
+    }
+    
+    protected IEnumerator FindResourceInABuilding(Building b)
+    {
+        bool find = false;
+        while (!find)
         {
-            mBuilding.AddResources(m_Load);
+            for (int i = 0; i < b.mNeed.Length; i++)
+            {
+                //if (!b.mStock.ContainsKey(b.mNeed[i].type) || b.mStock[b.mNeed[i].type].quantity <= 0)
+                {
+                    Building target = GameManager.inst.FindNearestBuildingWithObjectInside(transform.position, b.mNeed[i].type);
+                    if (target == null)
+                        continue;
 
-            m_goLoading = true;
-            Building b = GameManager.inst.FindLonguestWaitingBuilding();
-            AssignPath(b.mCrtDoorNode.worldPosition, b);
+                    find = true;
+
+                    target.mStock[b.mNeed[i].type].reserved += 1;
+
+                    m_targetResourceTypeForCollect = b.mNeed[i].type;
+
+                    AssignPath(target.mCrtDoorNode.worldPosition, target);
+                    pathFinished = LoadToTarget;
+
+                    break;
+                }
+            }
+            yield return new WaitForSeconds(.5f);
         }
+    }
+
+    protected override void PathCompleted()
+    {
+        base.PathCompleted();
+    }
+    protected void LoadToTarget(Vehicul b)
+    {
+        m_Load = mBuilding.GetResources(m_targetResourceTypeForCollect);
+
+        AssignPath(mMasterBuilding.mCrtDoorNode.worldPosition, mMasterBuilding);
+
+        pathFinished = UnloadToMaster;
+    }
+    protected void UnloadToMaster(Vehicul b)
+    {
+        mBuilding.AddResources(m_Load);
+
+        //m_Load = null;
+        pathFinished = null;
+
+        StartCoroutine(FindResourceInABuilding(mMasterBuilding));
     }
 }

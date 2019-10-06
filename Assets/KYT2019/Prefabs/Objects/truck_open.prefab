@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7365613317316295014}
   - component: {fileID: 1236353477}
   - component: {fileID: 1236353476}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: truck_open
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -112,3 +112,4 @@ MonoBehaviour:
   m_stoppingDst: 1.5
   mVehiculTarget: {fileID: 0}
   mBuilding: {fileID: 0}
+  mMasterBuilding: {fileID: 0}

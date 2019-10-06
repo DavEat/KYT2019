@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class Building : VehiculTarget
 {
+    public class Quantity
+    {
+        public int quantity;
+        public int reserved;
+
+        public Quantity(int quantity, int reserved)
+        {
+            this.quantity = quantity;
+            this.reserved = reserved;
+        }
+    }
+
     #region Vars
     public Node[] mCrtNodes;
     public Node mCrtDoorNode;
@@ -11,7 +23,7 @@ public class Building : VehiculTarget
     public Vector2Int[] mSize = new Vector2Int[] { Vector2Int.zero };
     public Vector2Int mDoor;
 
-    public Dictionary<Goods.GoodsType, int> mStock = new Dictionary<Goods.GoodsType, int>();
+    public Dictionary<Goods.GoodsType, Quantity> mStock = new Dictionary<Goods.GoodsType, Quantity>();
     public Goods[] mNeed, mProduction;
 
     [SerializeField] protected GameObject m_warning = null;
@@ -22,6 +34,9 @@ public class Building : VehiculTarget
 
     [HideInInspector] public float mLastTimeResourceReceive = -1;
     [HideInInspector] public float mLastTimeResourceGetCollect = -1;
+
+    public int construcitonCost = 10;
+    public bool constructed = false;
     #endregion
     #region MonoFunctions
     protected override void Awake()
@@ -30,10 +45,14 @@ public class Building : VehiculTarget
     }
     protected override void Start()
     {
+        if (constructed)
+            Init();
+
+        //m_nodeDiameter = Grid.inst.nodeRadius * 2;
+    }
+    public virtual void Init()
+    {
         GameManager.inst.mBuildings.Add(this);
-
-        m_nodeDiameter = Grid.inst.nodeRadius * 2;
-
         Node node = Grid.inst.NodeFromWorldPoint(transform.position);
         Locate(node);
     }
@@ -115,7 +134,7 @@ public class Building : VehiculTarget
     }
     public virtual void Relocating(Node node)
     {
-        transform.position = node.worldPosition + new Vector3(centerOffet.x * m_nodeDiameter, 1, centerOffet.y * m_nodeDiameter);
+        transform.position = node.worldPosition - new Vector3(centerOffet.x * m_nodeDiameter, -1, centerOffet.y * m_nodeDiameter);
         Arrow.inst.Assign(transform, new Vector3(mDoor.x + centerOffet.x, 0, mDoor.y + centerOffet.y) * m_nodeDiameter);
         //Color = AvaibleNode(node) ? green : red;
 
@@ -129,6 +148,13 @@ public class Building : VehiculTarget
         Node doorNode = GetNeighbourNode(mDoor, node);
         if (nodes != null && doorNode != null) //verify is nodes are available and if door node is available
         {
+            if (!constructed) //cancel construction
+            {
+                constructed = true;
+                GameManager.inst.AddMoney(-construcitonCost);                
+                Init();
+            }
+
             //if available clear previous node
             ClearNodes();
             mCrtNodes = nodes;
@@ -143,6 +169,15 @@ public class Building : VehiculTarget
         }
         else
         {
+            /*if (!constructed) //cancel construction
+            {
+                transform.position = Vector3.one * 1000;
+                Destroy(gameObject, .1f);
+            }*/
+
+            if (!constructed)
+                transform.position = BuildingManager.inst.transform.position;
+
             if (mCrtNodes != null)
                 transform.position = mCrtNodes[0].worldPosition - new Vector3(centerOffet.x, 0, centerOffet.y) * m_nodeDiameter;
         }
@@ -242,8 +277,21 @@ public class Building : VehiculTarget
         {
             mLastTimeResourceGetCollect = Time.time;
 
-            mStock[mProduction[index].type] -= 1;
+            mStock[mProduction[index].type].quantity -= 1;
+            mStock[mProduction[index].type].reserved -= 1;
             return new Goods(mProduction[index].type, 1);
+        }
+        return null;
+    }
+    public Goods GetResources(Goods.GoodsType type)
+    {
+        if (mProduction.Length > 0 && mStock.ContainsKey(type))
+        {
+            mLastTimeResourceGetCollect = Time.time;
+
+            mStock[type].quantity -= 1;
+            mStock[type].reserved -= 1;
+            return new Goods(type, 1);
         }
         return null;
     }
@@ -251,9 +299,9 @@ public class Building : VehiculTarget
     {
         if (mStock.ContainsKey(goods.type))
         {
-            mStock[goods.type] += goods.quantity;
+            mStock[goods.type].quantity += goods.quantity;
         }
-        else mStock.Add(goods.type, goods.quantity);
+        else mStock.Add(goods.type, new Quantity(goods.quantity, 0));
 
         CheckRecipe();
 
@@ -264,23 +312,55 @@ public class Building : VehiculTarget
         bool canCook = true;
         for (int i = 0; i < mNeed.Length; i++)
         {
-            if (!mStock.ContainsKey(mNeed[i].type))
+            if (!mStock.ContainsKey(mNeed[i].type) || mStock[mNeed[i].type].quantity < mNeed[i].quantity)
                 canCook = false;
         }
         
         if (canCook)
         {
             for (int i = 0; i < mNeed.Length; i++)
-                mStock[mNeed[i].type] -= mNeed[i].quantity;
+                mStock[mNeed[i].type].quantity -= mNeed[i].quantity;
 
             for (int i = 0; i < mProduction.Length; i++)
             {
-                if (mStock.ContainsKey(mProduction[i].type))
-                    mStock[mProduction[i].type] += mProduction[i].quantity;
-                else mStock.Add(mProduction[i].type, mProduction[i].quantity);
+                if (m_sellProduction && GameManager.inst.autoSellProduction)
+                    GameManager.inst.AddMoney(mProduction[i].price);
+                else if (mStock.ContainsKey(mProduction[i].type))
+                {
+                    mStock[mProduction[i].type].quantity += mProduction[i].quantity;
+                }
+                else mStock.Add(mProduction[i].type, new Quantity(mProduction[i].quantity, 0));
                 Debug.Log("product: " + mProduction[i].type + " : " + mProduction[i].quantity);
             }
         }
+    }
+    public bool DontHaveNeedInStock()
+    {
+        for (int i = 0; i < mNeed.Length; i++)
+        {
+            if (!mStock.ContainsKey(mProduction[i].type) || mStock[mProduction[i].type].quantity <= 0)
+                return true;
+        }
+        return false;
+    }
+    public bool HaveProductionInStock()
+    {
+        for (int i = 0; i < mProduction.Length; i++)
+        {
+            if (mStock.ContainsKey(mProduction[i].type) && mStock[mProduction[i].type].quantity > mStock[mProduction[i].type].reserved)
+                return true;
+        }
+        return false;
+    }
+    public bool HaveProductionInStock(Goods.GoodsType type)
+    {
+        for (int i = 0; i < mProduction.Length; i++)
+        {
+            if (mProduction[i].type == type)
+                if (mStock.ContainsKey(mProduction[i].type) && mStock[mProduction[i].type].quantity > mStock[mProduction[i].type].reserved)
+                    return true;
+        }
+        return false;
     }
     #endregion
 }

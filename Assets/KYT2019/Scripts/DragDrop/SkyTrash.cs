@@ -11,7 +11,7 @@ public class SkyTrash : VehiculTarget
 
     protected override void Start()
     {
-        base.Start();
+        //base.Start();
         /*Node n = Grid.inst.NodeFromWorldPoint(transform.position);
         if (n != null)
             n.walkable = false;*/
@@ -26,8 +26,8 @@ public class SkyTrash : VehiculTarget
     {
         base.VehiculArrivedHere(v);
 
-        //StartCoroutine(Wait_AfterVehiculArrivedHere(v, .6f));
-        VehiculArrivedHereLogic(v);
+        StartCoroutine(Wait_AfterVehiculArrivedHere(v, .2f));
+        //VehiculArrivedHereLogic(v);
     }
     IEnumerator Wait_AfterVehiculArrivedHere(Vehicul v, float time)
     {

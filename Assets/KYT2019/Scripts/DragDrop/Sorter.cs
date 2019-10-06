@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Sorter : Building
 {
-    protected override void Start()
+    public override void Init()
     {
         GameManager.inst.mSorters.Add(this);
-        base.Start();
+        base.Init();
     }
 }

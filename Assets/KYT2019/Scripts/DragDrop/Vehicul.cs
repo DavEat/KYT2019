@@ -138,11 +138,11 @@ public class Vehicul : Selectable
         m_moving = false;
         ArrowDst.inst.Unassign();
 
-        //try
+        try
         {
             pathFinished.Invoke(this);
         }
-        //catch (System.Exception e) { print(e.ToString()); }
+        catch (System.Exception e) { print(e.ToString()); }
     }
     public void ClearPathFinished()
     {

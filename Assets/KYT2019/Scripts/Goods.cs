@@ -16,6 +16,7 @@ public class Goods
 
     public GoodsType type;
     public int quantity;
+    public int price;
 
     public Goods(GoodsType type, int quantity)
     {

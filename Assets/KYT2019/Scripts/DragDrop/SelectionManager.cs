@@ -23,9 +23,9 @@ public class SelectionManager : Singleton<SelectionManager>
     #region MonoFunctions
     void Update()
     {
-        if (CanvasManager.inst.mMenu.gameObject.activeSelf
+        /*if (CanvasManager.inst.mMenu.gameObject.activeSelf
          && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mMenu, Input.mousePosition))
-            return;
+            return;*/
 
         if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf
          && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mBuildingInfo.GetComponent<RectTransform>(), Input.mousePosition))
@@ -143,6 +143,13 @@ public class SelectionManager : Singleton<SelectionManager>
             selection.Diselection();
 
         Selectable tmp_selection = GetSelectableAtPosition(m_inputDown);
+        if (tmp_selection != null && tmp_selection is Building
+         && selection != null && selection is TransportTruck)
+        {
+            ((TransportTruck)selection).AssignBuilding((Building)tmp_selection);
+            selection = null;
+            return;
+        }
         if (tmp_selection != null && tmp_selection is VehiculTarget
          && selection != null && selection is Vehicul)
             ((VehiculTarget)tmp_selection).AssignVehicul((Vehicul)selection);
