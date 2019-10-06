@@ -12,11 +12,15 @@ public class Vehicul : Selectable
     protected Path m_path;
     protected Vector3 m_destination;
     protected bool m_moving = false;
+
+    [HideInInspector] public VehiculTarget mVehiculTarget;
+
+    [HideInInspector] public Building mBuilding;
     #endregion
     #region Events
     public delegate void PathFinished(Vehicul v);
     public PathFinished pathFinished;
-    [HideInInspector] public VehiculTarget mVehiculTarget;
+    public object locker = new object();
     #endregion
     #region MonoFunctions
 
@@ -35,9 +39,10 @@ public class Vehicul : Selectable
 
         ArrowDst.inst.Unassign();
     }
-    public virtual void AssignPath(Vector3 position)
+    public virtual void AssignPath(Vector3 position, Building b = null)
     {
         PathRequestManager.ResquestPath(new PathRequest(transform.position, position, OnPathFound));
+        mBuilding = b;
     }
     public void OnPathFound(Vector3[] wayPoints, bool pathSuccessfull)
     {
@@ -59,12 +64,12 @@ public class Vehicul : Selectable
     {
         int pathCrtIndex = 0;
         Transform t = transform;
-        Vector3 crtDirection = (path[0] - t.position).normalized; ;
+        Vector3 crtDirection = (path[0] - t.position).normalized;
         transform.LookAt(path[0]);
 
         while (pathCrtIndex != -1)
         {
-            if ((path[pathCrtIndex] - t.position).sqrMagnitude < .1f)
+            if ((path[pathCrtIndex] - t.position).sqrMagnitude < .2f)
             {
                 pathCrtIndex++;
                 if (pathCrtIndex >= path.Length)
@@ -78,7 +83,7 @@ public class Vehicul : Selectable
             }
             else
             {
-                t.Translate(Vector3.forward * Time.deltaTime * m_movementSpeed, Space.Self);
+                t.position = Vector3.MoveTowards(t.position, path[pathCrtIndex], Time.deltaTime * m_movementSpeed);
             }
 
             yield return null;
@@ -95,6 +100,9 @@ public class Vehicul : Selectable
 
         while (followingPath)
         {
+            if (m_path.turnBoundaries.Length > pathIndex)
+                yield return null;
+
             Vector2 pos2D = new Vector2(transform.position.x, transform.position.z);
             while (m_path.turnBoundaries[pathIndex].HasCrossedLine(pos2D))
             {
@@ -130,16 +138,17 @@ public class Vehicul : Selectable
         m_moving = false;
         ArrowDst.inst.Unassign();
 
-        try
+        //try
         {
             pathFinished.Invoke(this);
         }
-        catch (System.Exception e) { print(e.ToString()); }
+        //catch (System.Exception e) { print(e.ToString()); }
     }
     public void ClearPathFinished()
     {
+        StopCoroutine("MoveTo");
+
         pathFinished = null;
     }
-
     #endregion
 }

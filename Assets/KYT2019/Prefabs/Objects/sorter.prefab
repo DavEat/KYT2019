@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8920457716468860985}
   - component: {fileID: 6517595445939218848}
   - component: {fileID: 6438430051640105922}
-  - component: {fileID: 1125472016022247467}
+  - component: {fileID: 1213968371092229986}
   m_Layer: 9
   m_Name: sorter
   m_TagString: Untagged
@@ -94,7 +94,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.9840001, y: 1.488, z: 3.9680002}
   m_Center: {x: 0, y: 0.744, z: 0}
---- !u!114 &1125472016022247467
+--- !u!114 &1213968371092229986
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,18 +103,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 3749760697053081249}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e6ad64eb5072b44da0a75fd4682c565, type: 3}
+  m_Script: {fileID: 11500000, guid: 96e48fb0f38459143a596ac6f484bcb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_name: Sorting Machine
+  m_name: Sorting Center
   m_description: Will sort sky trash into metal and plastic shards
   centerOffet: {x: 0, y: 0.5}
   mSize:
   - {x: 0, y: 0}
   - {x: 0, y: -1}
   mDoor: {x: 1, y: -1}
+  mNeed:
+  - type: 0
+    quantity: 2
+  mProduction:
+  - type: 1
+    quantity: 1
+  - type: 2
+    quantity: 1
   m_warning: {fileID: 2404792373380486138}
   m_sellProduction: 1
+  mLastTimeResourceReceive: -1
+  mLastTimeResourceGetCollect: -1
 --- !u!1001 &5456152838605757479
 PrefabInstance:
   m_ObjectHideFlags: 0

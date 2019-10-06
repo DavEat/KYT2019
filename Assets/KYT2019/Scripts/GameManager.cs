@@ -8,6 +8,7 @@ public class GameManager : Singleton<GameManager>
     public Transform[] mExits;
 
     public List<Building> mSorters = new List<Building>();
+    public List<Building> mBuildings = new List<Building>();
     public List<SkyTrash> mSkyTrashs = new List<SkyTrash>();
 
 
@@ -52,6 +53,41 @@ public class GameManager : Singleton<GameManager>
             {
                 minDst = tmp_dst;
                 bestObject = o;
+            }
+        }
+        return bestObject;
+    }
+
+    internal Building FindLonguestWaitingBuilding()
+    {
+        Building bestObject = null;
+        float maxTime = -2;
+        foreach (Building o in mBuildings)
+        {            
+            if (o.mLastTimeResourceGetCollect > maxTime)
+            {
+                maxTime = o.mLastTimeResourceGetCollect;
+                bestObject = o;
+            }
+        }
+        return bestObject;
+    }
+    internal Building FindLonguestWaitingBuilding(Goods.GoodsType type)
+    {
+        Building bestObject = null;
+        float maxTime = -2;
+        foreach (Building o in mBuildings)
+        {
+            if (o is Sorter) continue;
+
+            for (int i = 0; i < o.mNeed.Length; i++)
+            {
+                if (o.mNeed[i].type == type)
+                    if (o.mLastTimeResourceReceive > maxTime)
+                    {
+                        maxTime = o.mLastTimeResourceReceive;
+                        bestObject = o;
+                    }
             }
         }
         return bestObject;

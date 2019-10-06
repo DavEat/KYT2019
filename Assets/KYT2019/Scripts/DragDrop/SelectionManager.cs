@@ -23,6 +23,22 @@ public class SelectionManager : Singleton<SelectionManager>
     #region MonoFunctions
     void Update()
     {
+        if (CanvasManager.inst.mMenu.gameObject.activeSelf
+         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mMenu, Input.mousePosition))
+            return;
+
+        if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf
+         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mBuildingInfo.GetComponent<RectTransform>(), Input.mousePosition))
+            return;
+
+        if (CanvasManager.inst.mPolitics.gameObject.activeSelf
+         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mPolitics, Input.mousePosition))
+            return;
+
+        if (CanvasManager.inst.mBuild.gameObject.activeSelf
+         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mBuild, Input.mousePosition))
+            return;
+
         if (m_drag)
         {
             Ray ray = Camera.main.ScreenPointToRay(InputPosition());
@@ -97,7 +113,11 @@ public class SelectionManager : Singleton<SelectionManager>
                 Ray ray = Camera.main.ScreenPointToRay(InputPosition());
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, 200, m_groundLayer))
-                    ((Vehicul)selection).AssignPath(hit.point);
+                {
+                    Vehicul v = ((Vehicul)selection);
+                    v.ClearPathFinished();
+                    v.AssignPath(hit.point);
+                }
             }
 
             if ((Input.mousePosition - m_inputDown).sqrMagnitude < .1f) // check if the down input position is the same a the up input position

@@ -108,3 +108,6 @@ MonoBehaviour:
   m_name: Sky Trash
   m_description: Savage depot of all kind of trash (even a working microwave)
   mNumberOfTrash: 6
+  m_production:
+    type: 0
+    quantity: 6

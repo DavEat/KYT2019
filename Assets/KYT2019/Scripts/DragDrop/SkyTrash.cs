@@ -7,6 +7,8 @@ public class SkyTrash : VehiculTarget
     public int mNumberOfTrash = 6;
     int m_MaxNumberOfTrash;
 
+    [SerializeField] Goods m_production = null;
+
     protected override void Start()
     {
         base.Start();
@@ -24,16 +26,22 @@ public class SkyTrash : VehiculTarget
     {
         base.VehiculArrivedHere(v);
 
-        StartCoroutine(Wait_AfterVehiculArrivedHere(v, .6f));
+        //StartCoroutine(Wait_AfterVehiculArrivedHere(v, .6f));
+        VehiculArrivedHereLogic(v);
     }
     IEnumerator Wait_AfterVehiculArrivedHere(Vehicul v, float time)
     {
         yield return new WaitForSeconds(time);
 
+        VehiculArrivedHereLogic(v);
+    }
+    void VehiculArrivedHereLogic(Vehicul v)
+    {
         transform.localScale = Vector3.one * (((mNumberOfTrash - 1) / (float)m_MaxNumberOfTrash) * .5f + .5f);
 
         if (mNumberOfTrash <= 0)
         {
+            v.ClearPathFinished();
             GameManager.inst.mSkyTrashs.Remove(this);
             SkyTrash s = GameManager.FindNearestObject(GameManager.inst.mSkyTrashs, transform.position);
             s.AssignVehicul(v);
@@ -43,13 +51,15 @@ public class SkyTrash : VehiculTarget
         {
             //find nearest sorter
             Building b = GameManager.FindNearestObject(GameManager.inst.mSorters, transform.position);
-            v.AssignPath(b.mCrtDoorNode.worldPosition);
+            v.AssignPath(b.mCrtDoorNode.worldPosition, b);
             v.pathFinished += VehiculArrivedToDestination;
         }
     }
     protected override void VehiculArrivedToDestination(Vehicul v)
     {
         mNumberOfTrash--;
+        if (v.mBuilding != null)
+            v.mBuilding.AddResources(new Goods(m_production.type, 1));
 
         base.VehiculArrivedToDestination(v);
     }

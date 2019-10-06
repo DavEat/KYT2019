@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 7365613317316295016}
   - component: {fileID: 7365613317316295015}
   - component: {fileID: 7365613317316295014}
+  - component: {fileID: 1236353477}
+  - component: {fileID: 1236353476}
   m_Layer: 0
   m_Name: truck_open
   m_TagString: Untagged
@@ -78,3 +80,35 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &1236353477
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7365613317316295013}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7360001, y: 0.93, z: 0.806}
+  m_Center: {x: -0.062000006, y: 0.465, z: -0.030999988}
+--- !u!114 &1236353476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7365613317316295013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef924053844933d44957b50318aa7498, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_name: Transport Truck
+  m_description: This Truck transport goods from factory to factory
+  m_movementSpeed: 2.5
+  m_rotationSpeed: 2
+  m_stoppingDst: 1.5
+  mVehiculTarget: {fileID: 0}
+  mBuilding: {fileID: 0}

@@ -105,6 +105,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bc5c569171e91d49bcca3853a30d874, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_name: Tractor
+  m_description: Can clear Sky Trash and transport them to the Sorting Center
   m_movementSpeed: 2
   m_rotationSpeed: 2
   m_stoppingDst: 1.5
+  mVehiculTarget: {fileID: 0}
