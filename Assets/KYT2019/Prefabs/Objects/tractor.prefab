@@ -91,7 +91,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.93, y: 0.744, z: 1.6740004}
+  m_Size: {x: 1.2, y: 1.34, z: 2.03}
   m_Center: {x: -0.031, y: 0.372, z: 0.217}
 --- !u!114 &7019878802400595958
 MonoBehaviour:
@@ -107,10 +107,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Tractor
   m_description: Can clear Sky Trash and transport them to the Sorting Center
+  mCanBeSelect: 1
   m_movementSpeed: 4
   m_rotationSpeed: 4
   m_stoppingDst: 1.5
   mVehiculTarget: {fileID: 0}
   mBuilding: {fileID: 0}
+  pathfinding: 0
   mConstrucitonCost: 10
   mMaintemanceCost: 1

@@ -24,7 +24,7 @@ public class Pathfinding : MonoBehaviour {
         Node startNode = _grid.NodeFromWorldPoint(request.pathStart);
         Node targetNode = _grid.NodeFromWorldPoint(request.pathEnd);
 
-        if (startNode.walkable && targetNode.walkable)
+        if (/*startNode.walkable &&*/ targetNode.walkable)
         {
             Heap<Node> openSet = new Heap<Node>(_grid.MaxSize);
             HashSet<Node> closeSet = new HashSet<Node>();

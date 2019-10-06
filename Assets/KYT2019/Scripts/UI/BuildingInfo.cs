@@ -25,12 +25,15 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] GameObject m_prod_r0= null;
     [SerializeField] TextMeshProUGUI m_prod_r0_name= null;
     [SerializeField] TextMeshProUGUI m_prod_r0_quantity= null;
+    [SerializeField] TextMeshProUGUI m_prod_r0_sell= null;
     [SerializeField] GameObject m_prod_r1= null;
     [SerializeField] TextMeshProUGUI m_prod_r1_name= null;
     [SerializeField] TextMeshProUGUI m_prod_r1_quantity= null;
+    [SerializeField] TextMeshProUGUI m_prod_r1_sell = null;
     [SerializeField] GameObject m_prod_r2= null;
     [SerializeField] TextMeshProUGUI m_prod_r2_name= null;
     [SerializeField] TextMeshProUGUI m_prod_r2_quantity= null;
+    [SerializeField] TextMeshProUGUI m_prod_r2_sell = null;
     [SerializeField] Toggle m_prod_sell_prod= null;
     [SerializeField] GameObject m_prod_none= null;
 
@@ -99,6 +102,7 @@ public class BuildingInfo : MonoBehaviour
                 m_prod_r0.SetActive(true);
                 m_prod_r0_name.text = prods[0].name;
                 m_prod_r0_quantity.text = prods[0].quantity.ToString();
+                m_prod_r0_sell.text = prods[0].sellPrice.ToString();
             }
             else m_prod_r0.SetActive(false);
 
@@ -107,6 +111,7 @@ public class BuildingInfo : MonoBehaviour
                 m_prod_r1.SetActive(true);
                 m_prod_r1_name.text = prods[1].name;
                 m_prod_r1_quantity.text = prods[1].quantity.ToString();
+                m_prod_r1_sell.text = prods[1].sellPrice.ToString();
             }
             else m_prod_r1.SetActive(false);
 
@@ -115,6 +120,7 @@ public class BuildingInfo : MonoBehaviour
                 m_prod_r2.SetActive(true);
                 m_prod_r2_name.text = prods[2].name;
                 m_prod_r2_quantity.text = prods[2].quantity.ToString();
+                m_prod_r2_sell.text = prods[2].sellPrice.ToString();
             }
             else m_prod_r2.SetActive(false);
         }
@@ -138,11 +144,19 @@ public class BuildingInfo : MonoBehaviour
     {
         public string name;
         public int quantity;
+        public int sellPrice;
 
         public UIResourceData(string name, int quantity)
         {
             this.name = name;
             this.quantity = quantity;
+            this.sellPrice = -1;
+        }
+        public UIResourceData(string name, int quantity, int sellPrice)
+        {
+            this.name = name;
+            this.quantity = quantity;
+            this.sellPrice = sellPrice;
         }
     }
 

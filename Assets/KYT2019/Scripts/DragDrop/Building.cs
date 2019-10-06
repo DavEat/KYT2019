@@ -118,7 +118,7 @@ public class Building : VehiculTarget
     }
     public override void Selection()
     {
-        //base.Selection();
+        base.Selection();
 
         List<BuildingInfo.UIResourceData> needs = new List<BuildingInfo.UIResourceData>();
         for (int i = 0; i < mNeed.Length; i++)
@@ -126,28 +126,23 @@ public class Building : VehiculTarget
 
         List<BuildingInfo.UIResourceData> prods = new List<BuildingInfo.UIResourceData>();
         for (int i = 0; i < mProduction.Length; i++)
-            prods.Add(new BuildingInfo.UIResourceData(mProduction[i].type.ToString(), mProduction[i].quantity));
+            prods.Add(new BuildingInfo.UIResourceData(mProduction[i].type.ToString(), mProduction[i].quantity, mProduction[i].price));
 
         CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, needs.ToArray(), prods.ToArray(), m_sellProduction);
     }
-    public override void Diselection()
-    {
-        base.Diselection();
-    }
-    public virtual void Locating()
-    {
-
-    }
     public virtual void Relocating(Node node)
     {
+        CanvasManager.inst.mBuildingInfo.HideItemInfos();
+
         transform.position = node.worldPosition - new Vector3(centerOffet.x * m_nodeDiameter, -1, centerOffet.y * m_nodeDiameter);
         Arrow.inst.Assign(transform, new Vector3(mDoor.x + centerOffet.x, 0, mDoor.y + centerOffet.y) * m_nodeDiameter);
         //Color = AvaibleNode(node) ? green : red;
-
-        Locating();
     }
-    public virtual bool Locate(Node node)
+    public virtual bool Locate(Node node, bool afterDrag = false)
     {
+        if (afterDrag)
+            Selection();
+
         Arrow.inst.Unassign();
 
         Node[] nodes = AvaibleNodes(node);
@@ -169,6 +164,8 @@ public class Building : VehiculTarget
 
             transform.position = mCrtNodes[0].worldPosition - new Vector3(centerOffet.x, 0, centerOffet.y) * m_nodeDiameter;
 
+            SoundManager.inst.PlayBuild();
+
             SelectionManager.buildingPlaced.Invoke();
 
             return true;
@@ -180,6 +177,8 @@ public class Building : VehiculTarget
                 transform.position = Vector3.one * 1000;
                 Destroy(gameObject, .1f);
             }*/
+
+            SoundManager.inst.PlayError();
 
             if (!constructed)
                 transform.position = BuildingManager.inst.transform.position;

@@ -25,11 +25,15 @@ public class Selectable : MonoBehaviour
     {
         //print(name + " select");
         CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, null, null, true);
+
+        SoundManager.inst.PlaySelection();
     }
     public virtual void Diselection()
     {
         //print(name + " diselect");
         CanvasManager.inst.mBuildingInfo.HideItemInfos();
+
+        SoundManager.inst.PlayUnselection();
     }
     #endregion
 }

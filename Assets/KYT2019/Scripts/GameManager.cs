@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -17,9 +19,45 @@ public class GameManager : Singleton<GameManager>
     public List<Building> mBuildings = new List<Building>();
     public List<SkyTrash> mSkyTrashs = new List<SkyTrash>();
 
+    // who can not walkable cause of a building
+    public Node[] mWalkableNode;
+
     public void Start()
     {
         StartCoroutine(MaintenanceLogic());
+
+        mWalkableNode = Grid.inst.GetAllWalkableNode();
+    }
+    public void RemoveSkyTrash(SkyTrash trash)
+    {
+        mSkyTrashs.Remove(trash);
+        if (mSkyTrashs.Count <= 0)
+        {
+            CanvasManager.inst.mBuild.gameObject.SetActive(false);
+            CanvasManager.inst.mPolitics.gameObject.SetActive(false);
+            CanvasManager.inst.mBuildingInfo.gameObject.SetActive(false);
+            CanvasManager.inst.mLoseWin.gameObject.SetActive(true);
+            CanvasManager.inst.mLoseWinText.text = "Congrats dump cleared !";
+            Debug.Log("congrats dump cleared");
+        }
+    }
+    public Node FindNearestWalkableBuildableNodePos(Vector3 position)
+    {
+        Node bestNode = null;
+        float minDst = 9999;
+        for (int i = 0; i < mWalkableNode.Length; i++)
+        {
+            if (mWalkableNode[i].walkable && mWalkableNode[i].buildable)
+            {
+                float tmp_dst = (position - mWalkableNode[i].worldPosition).sqrMagnitude;
+                if (tmp_dst < minDst)
+                {
+                    minDst = tmp_dst;
+                    bestNode = mWalkableNode[i];
+                }
+            }
+        }
+        return bestNode;
     }
     IEnumerator MaintenanceLogic()
     {
@@ -33,6 +71,16 @@ public class GameManager : Singleton<GameManager>
     {
         money += value;
         CanvasManager.inst.mCash.text = money.ToString();
+
+        if (money < -60)
+        {
+            CanvasManager.inst.mBuild.gameObject.SetActive(false);
+            CanvasManager.inst.mPolitics.gameObject.SetActive(false);
+            CanvasManager.inst.mBuildingInfo.gameObject.SetActive(false);
+            CanvasManager.inst.mLoseWin.gameObject.SetActive(true);
+            CanvasManager.inst.mLoseWinText.text = "Too bad you lose because you have too many debt";
+            Debug.Log("Too bad you lose because you have too many debt");
+        }
     }
     public void AddMaintenanceCost(int value)
     {
@@ -92,21 +140,27 @@ public class GameManager : Singleton<GameManager>
         }
         return bestObject;
     }
-    internal static SkyTrash FindNearestObject(List<SkyTrash> objects, Vector3 position)
+    internal SkyTrash FindNearestSkyTrash(Vector3 position, Action action)
     {
         SkyTrash bestObject = null;
         float minDst = 9999;
-        foreach (SkyTrash o in objects)
         {
-            float tmp_dst = (position - o.transform.position).sqrMagnitude;
-            if (tmp_dst < minDst)
+            foreach (SkyTrash o in mSkyTrashs)
             {
-                minDst = tmp_dst;
-                bestObject = o;
+                if (o.m_vehiculs.Count > 0) continue;
+
+                float tmp_dst = (position - o.transform.position).sqrMagnitude;
+                if (tmp_dst < minDst)
+                {
+                    minDst = tmp_dst;
+                    bestObject = o;
+                }
             }
-        }
+        };
         return bestObject;
     }
+
+
     internal Building FindLonguestWaitingBuilding()
     {
         Building bestObject = null;
@@ -140,5 +194,12 @@ public class GameManager : Singleton<GameManager>
             }
         }
         return bestObject;
+    }
+
+    public void ReloadScene()
+    {
+        //Scene scene = SceneManager.GetActiveScene();
+        //SceneManager.LoadScene(scene.name);
+        Application.Quit();
     }
 }

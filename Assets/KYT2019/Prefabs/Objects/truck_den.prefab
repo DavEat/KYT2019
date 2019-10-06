@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 8473573910120783966}
   - component: {fileID: 8473573910120783967}
   - component: {fileID: 8473573910120783964}
+  - component: {fileID: 8473573911707209459}
+  - component: {fileID: 5939191512285730486}
   m_Layer: 0
   m_Name: truck_den
   m_TagString: Untagged
@@ -78,3 +80,41 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!65 &8473573911707209459
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8473573910120783965}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.93, y: 0.93, z: 1.86}
+  m_Center: {x: 0.031000018, y: 0.465, z: -0.062000036}
+--- !u!114 &5939191512285730486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8473573910120783965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b0dc09a8cd0b3141b04100b645bf28a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_name: 
+  m_description: 
+  mCanBeSelect: 1
+  m_movementSpeed: 1
+  m_rotationSpeed: 1
+  m_stoppingDst: 1
+  mVehiculTarget: {fileID: 0}
+  mBuilding: {fileID: 0}
+  pathfinding: 0
+  mConstrucitonCost: 10
+  mMaintemanceCost: 1
+  mOutsideDestination: {fileID: 0}
+  dumdPrebab: {fileID: 0}

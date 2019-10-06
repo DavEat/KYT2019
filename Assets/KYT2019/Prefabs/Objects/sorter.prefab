@@ -94,8 +94,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.9840001, y: 1.488, z: 3.9680002}
-  m_Center: {x: 0, y: 0.744, z: 0}
+  m_Size: {x: 3.9840007, y: 0.7645346, z: 3.9680002}
+  m_Center: {x: -1.0000002, y: 0.3822673, z: 0}
 --- !u!114 &1213968371092229986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,6 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Sorting Center
   m_description: Will sort sky trash into metal and plastic shards
+  m_vehiculs: []
   centerOffet: {x: 0, y: 0.5}
   mSize:
   - {x: 0, y: 0}
@@ -133,6 +134,7 @@ MonoBehaviour:
   mLastTimeResourceReceive: -1
   mLastTimeResourceGetCollect: -1
   construcitonCost: 10
+  mMaintemanceCost: 1
   constructed: 1
 --- !u!1001 &5456152838605757479
 PrefabInstance:
@@ -282,7 +284,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8067245865788922782, guid: dec165440b27fb647bbde46653c6d0f2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dec165440b27fb647bbde46653c6d0f2, type: 3}
 --- !u!4 &6972738708541151363 stripped
 Transform:
@@ -357,7 +360,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8067245865788922782, guid: dec165440b27fb647bbde46653c6d0f2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dec165440b27fb647bbde46653c6d0f2, type: 3}
 --- !u!4 &6226613186395334004 stripped
 Transform:

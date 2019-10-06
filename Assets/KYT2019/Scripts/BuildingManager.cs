@@ -9,6 +9,8 @@ public class BuildingManager : Singleton<BuildingManager>
         if (GameManager.inst.money > 0)
         {
             Building b = Instantiate(prefab, transform.position, Quaternion.identity);
+            SoundManager.inst.PlayButton();
         }
+        else SoundManager.inst.PlayError();
     }
 }

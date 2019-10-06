@@ -5,6 +5,8 @@ using UnityEngine;
 public class Vehicul : Selectable
 {
     #region Vars
+    public bool mCanBeSelect = true;
+
     [SerializeField] protected float m_movementSpeed = 1;
     [SerializeField] protected float m_rotationSpeed = 1;
     [SerializeField] protected float m_stoppingDst = 1;
@@ -16,6 +18,8 @@ public class Vehicul : Selectable
     [HideInInspector] public VehiculTarget mVehiculTarget;
 
     [HideInInspector] public Building mBuilding;
+
+    public bool pathfinding = false;
     #endregion
     #region Events
     public delegate void PathFinished(Vehicul v);
@@ -49,51 +53,61 @@ public class Vehicul : Selectable
     }
     public virtual void AssignPath(Vector3 position, Building b = null)
     {
-        PathRequestManager.ResquestPath(new PathRequest(transform.position, position, OnPathFound));
-        mBuilding = b;
+        if ((position - transform.position).sqrMagnitude < m_stoppingDst * m_stoppingDst)
+            PathCompleted();
+        else
+        {
+            pathfinding = true;
+            m_destination = position;
+            mBuilding = b;
+            PathRequestManager.ResquestPath(new PathRequest(transform.position, position, OnPathFound));
+        }
     }
+    Vector3[] m_waypoints;
     public void OnPathFound(Vector3[] wayPoints, bool pathSuccessfull)
     {
         if (pathSuccessfull)
         {
             int turnDst = 1;
+            m_waypoints = wayPoints;
             m_destination = wayPoints[wayPoints.Length - 1];
             m_path = new Path(wayPoints, transform.position, turnDst, m_stoppingDst);
             m_moving = true;
 
             StopCoroutine("MoveTo");
-            StartCoroutine(MoveTo(wayPoints));
+            StartCoroutine("MoveTo");
 
             /*StopCoroutine("FollowPath");
             StartCoroutine(FollowPath());*/
         }
+        //else AssignPath(m_destination);
+        pathfinding = false;
     }
-    IEnumerator MoveTo(Vector3[] path)
+    IEnumerator MoveTo()
     {
         int pathCrtIndex = 0;
         Transform t = transform;
-        Vector3 crtDirection = (path[0] - t.position).normalized;
-        transform.LookAt(path[0]);
+        Vector3 crtDirection = (m_waypoints[0] - t.position).normalized;
+        transform.LookAt(m_waypoints[0]);
 
         while (pathCrtIndex != -1)
         {
-            if ((path[pathCrtIndex] - t.position).sqrMagnitude < .2f)
+            if ((m_waypoints[pathCrtIndex] - t.position).sqrMagnitude < .2f)
             {
                 pathCrtIndex++;
-                if (pathCrtIndex >= path.Length)
+                if (pathCrtIndex >= m_waypoints.Length)
                     pathCrtIndex = -1;
                 else
                 {
-                    Quaternion targetRotation = Quaternion.LookRotation(path[pathCrtIndex] - t.position);
+                    Quaternion targetRotation = Quaternion.LookRotation(m_waypoints[pathCrtIndex] - t.position);
                     t.rotation = targetRotation;
-                    crtDirection = (path[pathCrtIndex] - t.position).normalized;
+                    crtDirection = (m_waypoints[pathCrtIndex] - t.position).normalized;
                 }
             }
             else
             {
-                t.position = Vector3.MoveTowards(t.position, path[pathCrtIndex], Time.deltaTime * m_movementSpeed);
+                t.position = Vector3.MoveTowards(t.position, m_waypoints[pathCrtIndex], Time.deltaTime * m_movementSpeed);
             }
-
             yield return null;
         }
         PathCompleted();
@@ -124,13 +138,6 @@ public class Vehicul : Selectable
 
             if (followingPath)
             {
-                if (pathIndex >= m_path.slowDownIndex && m_stoppingDst > 0)
-                {
-                    speedPercent = Mathf.Clamp01(m_path.turnBoundaries[m_path.finishLineIndex].DistanceFromPoint(pos2D) / m_stoppingDst);
-                    if (speedPercent < 0.01f)
-                        followingPath = false;
-                }
-
                 Quaternion targetRotation = Quaternion.LookRotation(m_path.lookPoints[pathIndex] - transform.position);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * m_rotationSpeed);
                 transform.Translate(Vector3.forward * Time.deltaTime * m_movementSpeed * speedPercent, Space.Self);
@@ -150,13 +157,21 @@ public class Vehicul : Selectable
         {
             pathFinished.Invoke(this);
         }
-        catch (System.Exception e) { print(e.ToString()); }
+        catch (System.Exception e) { Debug.Log(name + ": " + e.ToString(), this.gameObject); }
     }
     public void ClearPathFinished()
     {
         StopCoroutine("MoveTo");
-
+        ArrowDst.inst.Unassign();
+        m_moving = false;
         pathFinished = null;
+    }
+    public void ClearTargetVehicul()
+    {
+        if (mVehiculTarget == null) return;
+
+        mVehiculTarget.UnAssignVehicul(this);
+        mVehiculTarget = null;
     }
     #endregion
 }

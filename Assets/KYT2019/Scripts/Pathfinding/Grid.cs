@@ -210,4 +210,20 @@ public class Grid : Singleton<Grid> {
         public LayerMask terrainMask;
         public int terrainPenalty;
     }
+
+    public Node[] GetAllWalkableNode()
+    {
+        List<Node> nodes = new List<Node>();
+
+        for (int x = 0; x < gridSizeX; x++)
+        {
+            for (int y = 0; y < gridSizeY; y++)
+            {
+                if (grid[x, y].walkable)
+                    nodes.Add(grid[x, y]);
+            }
+        }
+
+        return nodes.ToArray();
+    }
 }

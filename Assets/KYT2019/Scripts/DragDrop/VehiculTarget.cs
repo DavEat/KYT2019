@@ -5,7 +5,7 @@ using UnityEngine;
 public class VehiculTarget : Selectable
 {
     #region Vars
-    protected List<Vehicul> m_vehiculs = new List<Vehicul>();
+    public List<Vehicul> m_vehiculs = new List<Vehicul>();
     #endregion
     #region MonoFunctions
     #endregion
@@ -17,6 +17,7 @@ public class VehiculTarget : Selectable
 
         v.ClearPathFinished();
 
+        v.mVehiculTarget = this;
         m_vehiculs.Add(v);
         SendVehiculHere(v);
     }

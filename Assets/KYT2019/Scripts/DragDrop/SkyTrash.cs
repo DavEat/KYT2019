@@ -21,22 +21,25 @@ public class SkyTrash : VehiculTarget
         GameManager.inst.mSkyTrashs.Add(this);
 
         transform.localEulerAngles = new Vector3(0, 90 * Random.Range(0, 4), 0);
+
+        Grid.inst.NodeFromWorldPoint(transform.position).buildable = false;
     }
     public override void AssignVehicul(Vehicul v)
     {
-        if (v.mVehiculTarget != null)
-            v.mVehiculTarget.UnAssignVehicul(v);
-
-        v.ClearPathFinished();
-
         if (m_vehiculs.Count <= 0)
         {
+            if (v.mVehiculTarget != null)
+                v.mVehiculTarget.UnAssignVehicul(v);
+
+            v.ClearPathFinished();
+
+            v.mVehiculTarget = this;
             m_vehiculs.Add(v);
             SendVehiculHere(v);
         }
         else
         {
-            SkyTrash s = GameManager.FindNearestObject(GameManager.inst.mSkyTrashs, transform.position);
+            SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position, null);
             if (s != null)
                 s.AssignVehicul(v);
         }
@@ -61,10 +64,12 @@ public class SkyTrash : VehiculTarget
         if (mNumberOfTrash <= 0)
         {
             v.ClearPathFinished();
-            GameManager.inst.mSkyTrashs.Remove(this);
-            SkyTrash s = GameManager.FindNearestObject(GameManager.inst.mSkyTrashs, transform.position);
+            GameManager.inst.RemoveSkyTrash(this);
+            SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position, null);
             if (s != null)
                 s.AssignVehicul(v);
+
+            Grid.inst.NodeFromWorldPoint(transform.position).buildable = true;
             Destroy(gameObject, .1f);
         }
         else
@@ -77,9 +82,12 @@ public class SkyTrash : VehiculTarget
     }
     protected override void VehiculArrivedToDestination(Vehicul v)
     {
-        mNumberOfTrash--;
         if (v.mBuilding != null)
+        {
+            mNumberOfTrash--;
             v.mBuilding.AddResources(new Goods(m_production.type, 1));
+            PoliticsManager.inst.DumpTreated();
+        }
 
         base.VehiculArrivedToDestination(v);
     }

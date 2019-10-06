@@ -12,6 +12,10 @@ public class Goods
         PlasticShard,
         IronIngot,
         PlasticWire,
+        Gear,
+        ElectricComposent,
+        _3DPrint,
+        SolarPanel,
     }
 
     public GoodsType type;

@@ -9,6 +9,8 @@ public class VehiculPurchaceManager : MonoBehaviour
         if (GameManager.inst.money > 0)
         {
             Vehicul v = Instantiate(prefab, transform.position, Quaternion.identity);
+            SoundManager.inst.PlayButton();
         }
+        else SoundManager.inst.PlayError();
     }
 }
