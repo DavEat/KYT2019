@@ -21,11 +21,19 @@ public class Vehicul : Selectable
     public delegate void PathFinished(Vehicul v);
     public PathFinished pathFinished;
     public object locker = new object();
+
+    public int mConstrucitonCost = 10;
+    public int mMaintemanceCost = 1;
     #endregion
     #region MonoFunctions
 
     #endregion
     #region Functions
+    protected override void Start()
+    {
+        GameManager.inst.AddMoney(-mConstrucitonCost);
+        GameManager.inst.AddMaintenanceCost(mMaintemanceCost);
+    }
     public override void Selection()
     {
         base.Selection();

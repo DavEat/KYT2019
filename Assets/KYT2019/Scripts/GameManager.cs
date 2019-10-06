@@ -6,8 +6,10 @@ using UnityEngine;
 public class GameManager : Singleton<GameManager>
 {
     public bool autoSellProduction = true;
+    public float maintenanceEachSec = 10;
+
     public int money;
-    
+    public int maintenance = 0;
 
     public Transform[] mExits;
 
@@ -15,18 +17,33 @@ public class GameManager : Singleton<GameManager>
     public List<Building> mBuildings = new List<Building>();
     public List<SkyTrash> mSkyTrashs = new List<SkyTrash>();
 
+    public void Start()
+    {
+        StartCoroutine(MaintenanceLogic());
+    }
+    IEnumerator MaintenanceLogic()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(maintenanceEachSec);
+            AddMoney(-maintenance);
+        }
+    }
     public void AddMoney(int value)
     {
         money += value;
         CanvasManager.inst.mCash.text = money.ToString();
     }
-
+    public void AddMaintenanceCost(int value)
+    {
+        maintenance += value;
+        CanvasManager.inst.mUpKeep.text = maintenance.ToString();
+    }
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
-
     internal static Selectable FindNearestObject(List<Selectable> objects , Vector3 position)
     {
         Selectable bestObject = null;
@@ -90,7 +107,6 @@ public class GameManager : Singleton<GameManager>
         }
         return bestObject;
     }
-
     internal Building FindLonguestWaitingBuilding()
     {
         Building bestObject = null;

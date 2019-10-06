@@ -10,10 +10,6 @@ public class TransportTruck : Vehicul
     Goods.GoodsType m_targetResourceTypeForCollect;
     public Building mMasterBuilding;
 
-    protected override void Start()
-    {
-
-    }
     public void AssignBuilding(Building b)
     {
         mMasterBuilding = b;

@@ -107,7 +107,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Tractor
   m_description: Can clear Sky Trash and transport them to the Sorting Center
-  m_movementSpeed: 2
-  m_rotationSpeed: 2
+  m_movementSpeed: 4
+  m_rotationSpeed: 4
   m_stoppingDst: 1.5
   mVehiculTarget: {fileID: 0}
+  mBuilding: {fileID: 0}
+  mConstrucitonCost: 10
+  mMaintemanceCost: 1

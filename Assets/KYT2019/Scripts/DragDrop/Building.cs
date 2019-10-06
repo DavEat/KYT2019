@@ -36,6 +36,7 @@ public class Building : VehiculTarget
     [HideInInspector] public float mLastTimeResourceGetCollect = -1;
 
     public int construcitonCost = 10;
+    public int mMaintemanceCost = 1;
     public bool constructed = false;
     #endregion
     #region MonoFunctions
@@ -53,9 +54,14 @@ public class Building : VehiculTarget
     public virtual void Init()
     {
         GameManager.inst.mBuildings.Add(this);
+        GameManager.inst.AddMaintenanceCost(mMaintemanceCost);
+
         Node node = Grid.inst.NodeFromWorldPoint(transform.position);
         Locate(node);
     }
+
+
+
     protected override void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

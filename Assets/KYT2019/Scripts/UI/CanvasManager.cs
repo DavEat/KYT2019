@@ -11,4 +11,5 @@ public class CanvasManager : Singleton<CanvasManager>
     public RectTransform mBuild;
 
     public TextMeshProUGUI mCash = null;
+    public TextMeshProUGUI mUpKeep = null;
 }

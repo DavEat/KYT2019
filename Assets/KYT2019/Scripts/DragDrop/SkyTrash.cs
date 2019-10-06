@@ -22,6 +22,25 @@ public class SkyTrash : VehiculTarget
 
         transform.localEulerAngles = new Vector3(0, 90 * Random.Range(0, 4), 0);
     }
+    public override void AssignVehicul(Vehicul v)
+    {
+        if (v.mVehiculTarget != null)
+            v.mVehiculTarget.UnAssignVehicul(v);
+
+        v.ClearPathFinished();
+
+        if (m_vehiculs.Count <= 0)
+        {
+            m_vehiculs.Add(v);
+            SendVehiculHere(v);
+        }
+        else
+        {
+            SkyTrash s = GameManager.FindNearestObject(GameManager.inst.mSkyTrashs, transform.position);
+            if (s != null)
+                s.AssignVehicul(v);
+        }
+    }
     protected override void VehiculArrivedHere(Vehicul v)
     {
         base.VehiculArrivedHere(v);
@@ -44,7 +63,8 @@ public class SkyTrash : VehiculTarget
             v.ClearPathFinished();
             GameManager.inst.mSkyTrashs.Remove(this);
             SkyTrash s = GameManager.FindNearestObject(GameManager.inst.mSkyTrashs, transform.position);
-            s.AssignVehicul(v);
+            if (s != null)
+                s.AssignVehicul(v);
             Destroy(gameObject, .1f);
         }
         else

@@ -6,6 +6,9 @@ public class BuildingManager : Singleton<BuildingManager>
 {
     public void CreateBuilding(Building prefab)
     {
-        Building b = Instantiate(prefab, transform.position, Quaternion.identity);
+        if (GameManager.inst.money > 0)
+        {
+            Building b = Instantiate(prefab, transform.position, Quaternion.identity);
+        }
     }
 }
