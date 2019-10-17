@@ -13,6 +13,8 @@ public class GameManager : Singleton<GameManager>
     public int money;
     public int maintenance = 0;
 
+    public int numberOfSolarPanel = 0;
+
     public Transform[] mExits;
 
     public List<Building> mSorters = new List<Building>();
@@ -39,6 +41,7 @@ public class GameManager : Singleton<GameManager>
             CanvasManager.inst.mLoseWin.gameObject.SetActive(true);
             CanvasManager.inst.mLoseWinText.text = "Congrats dump cleared !";
             Debug.Log("congrats dump cleared");
+            CanvasManager.inst.mNumberOfSolarPanel.text = string.Format("You built {0} solar panels", numberOfSolarPanel);
         }
     }
     public Node FindNearestWalkableBuildableNodePos(Vector3 position)
@@ -80,6 +83,7 @@ public class GameManager : Singleton<GameManager>
             CanvasManager.inst.mLoseWin.gameObject.SetActive(true);
             CanvasManager.inst.mLoseWinText.text = "Too bad you lose because you have too many debt";
             Debug.Log("Too bad you lose because you have too many debt");
+            CanvasManager.inst.mNumberOfSolarPanel.text = string.Format("You built {0} solar panels", numberOfSolarPanel);
         }
     }
     public void AddMaintenanceCost(int value)
@@ -113,6 +117,8 @@ public class GameManager : Singleton<GameManager>
         float minDst = 9999;
         foreach (Building o in objects)
         {
+            //if (!o.constructed) continue;
+
             float tmp_dst = (position - o.transform.position).sqrMagnitude;
             if (tmp_dst < minDst)
             {
@@ -198,8 +204,15 @@ public class GameManager : Singleton<GameManager>
 
     public void ReloadScene()
     {
-        //Scene scene = SceneManager.GetActiveScene();
-        //SceneManager.LoadScene(scene.name);
+        DumbTruck.commingTime = 5;
+        SelectionManager.selection = null;
+        SelectionManager.buildingPlaced = null;
+
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
+    }
+    public void Quit()
+    {
         Application.Quit();
     }
 }

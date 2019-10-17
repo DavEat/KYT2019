@@ -37,7 +37,7 @@ public class SkyTrash : VehiculTarget
             m_vehiculs.Add(v);
             SendVehiculHere(v);
         }
-        else
+        else if (m_vehiculs[0] != v)
         {
             SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position, null);
             if (s != null)

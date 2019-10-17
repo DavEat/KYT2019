@@ -16,4 +16,7 @@ public class CanvasManager : Singleton<CanvasManager>
 
     public RectTransform mLoseWin = null;
     public TextMeshProUGUI mLoseWinText = null;
+    public TextMeshProUGUI mNumberOfSolarPanel = null;
+
+    public GameObject mVehiculeDepot = null;
 }

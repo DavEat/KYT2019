@@ -58,7 +58,6 @@ public class Grid : Singleton<Grid> {
                 {
                     walkableRegionDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
                 }
-
                 if (!walkable)
                 {
                     movementPenalty += obstacleProximityPenalty;

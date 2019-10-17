@@ -9,7 +9,7 @@ public class ArrowDst : Singleton<ArrowDst>
         gameObject.SetActive(true);
         transform.position = postion;
     }
-    public void Unassign()
+    public void Unsign()
     {
         gameObject.SetActive(false);
     }

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8951289478713597493}
   - component: {fileID: 212775452507943138}
   m_Layer: 9
-  m_Name: waste_solid
+  m_Name: workshop_steel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Steel Workshop
   m_description: Transform Metal Shards into Steel
+  m_vehiculs: []
   centerOffet: {x: 0.5, y: 0.5}
   mSize:
   - {x: 0, y: 0}
@@ -118,13 +119,18 @@ MonoBehaviour:
   mNeed:
   - type: 1
     quantity: 2
+    price: 0
   mProduction:
   - type: 3
     quantity: 1
+    price: 0
   m_warning: {fileID: 1553616838804409478}
   m_sellProduction: 1
   mLastTimeResourceReceive: -1
   mLastTimeResourceGetCollect: -1
+  construcitonCost: 10
+  mMaintemanceCost: 1
+  constructed: 0
 --- !u!1001 &9180624940301075291
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -137,10 +143,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: warning
       objectReference: {fileID: 0}
+    - target: {fileID: 7703319156266651613, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5899369437501244688, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 5899369437501244688, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
         type: 3}

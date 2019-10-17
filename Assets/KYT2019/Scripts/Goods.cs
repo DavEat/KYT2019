@@ -18,6 +18,19 @@ public class Goods
         SolarPanel,
     }
 
+    public readonly static string[] GOODS_NAMES =
+    {
+        "Sky Trash",
+        "Iron Shard",
+        "Plastic Shard",
+        "Iron Ingot",
+        "Plastic Wire",
+        "Metal Gear",
+        "Electric Composent",
+        "3D Prints",
+        "Solar Panel",
+    };
+
     public GoodsType type;
     public int quantity;
     public int price;

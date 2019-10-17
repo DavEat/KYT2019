@@ -42,7 +42,6 @@ public class SoundManager : Singleton<SoundManager>
     }
     public void PlayMove()
     {
-        Debug.Log("asasas");
         m_source.PlayOneShot(m_moveSound);
     }
     public void PlayError()

@@ -33,13 +33,13 @@ public class VehiculTarget : Selectable
     protected virtual void VehiculArrivedHere(Vehicul v)
     {
         //Debug.DrawRay(transform.position, Vector3.up * 10, Color.green, 10);
-        Debug.LogFormat("vehicul {0} arrived here", v.name, v.gameObject);
+        //Debug.LogFormat("vehicul {0} arrived here", v.name, v.gameObject);
         v.pathFinished -= VehiculArrivedHere;
     }
     protected virtual void VehiculArrivedToDestination(Vehicul v)
     {
         //Debug.DrawRay(transform.position, Vector3.up, Color.red, 10);
-        Debug.LogFormat("vehicul {0} arrived to dst", v.name, v.gameObject);
+        //Debug.LogFormat("vehicul {0} arrived to dst", v.name, v.gameObject);
         v.pathFinished -= VehiculArrivedToDestination;
         SendVehiculHere(v);
     }

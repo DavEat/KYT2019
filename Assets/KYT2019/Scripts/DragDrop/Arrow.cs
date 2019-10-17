@@ -9,9 +9,9 @@ public class Arrow : Singleton<Arrow>
         gameObject.SetActive(true);
         transform.parent = parent;
         transform.localPosition = localPosition;
-        transform.rotation = Quaternion.identity;
+        transform.localRotation = Quaternion.identity;
     }
-    public void Unassign()
+    public void Unsign()
     {
         gameObject.SetActive(false);
     }

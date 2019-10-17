@@ -28,7 +28,7 @@ public class Building : VehiculTarget
 
     [SerializeField] protected GameObject m_warning = null;
 
-    float m_nodeDiameter = 2;
+    protected float m_nodeDiameter = 2;
 
     public bool m_sellProduction = true;
 
@@ -37,31 +37,23 @@ public class Building : VehiculTarget
 
     public int construcitonCost = 10;
     public int mMaintemanceCost = 1;
+
     public bool constructed = false;
+
+    public bool mVehiculTargettable = true;
     #endregion
     #region MonoFunctions
-    protected override void Awake()
-    {
-        SelectionManager.buildingPlaced += BuildingPlaced;
-    }
     protected override void Start()
     {
         if (constructed)
+        {
             Init();
+            Vector2 center = Utilities.Rotate(centerOffet, transform.eulerAngles.y);
+            Locate(Grid.inst.NodeFromWorldPoint(transform.position + new Vector3(center.x, 0, center.y) * m_nodeDiameter));
+        }
 
         //m_nodeDiameter = Grid.inst.nodeRadius * 2;
     }
-    public virtual void Init()
-    {
-        GameManager.inst.mBuildings.Add(this);
-        GameManager.inst.AddMaintenanceCost(mMaintemanceCost);
-
-        Node node = Grid.inst.NodeFromWorldPoint(transform.position);
-        Locate(node);
-    }
-
-
-
     protected override void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -78,6 +70,15 @@ public class Building : VehiculTarget
     }
     #endregion
     #region Functions
+    public virtual void Init()
+    {
+        SelectionManager.buildingPlaced += BuildingPlaced;
+
+        GameManager.inst.mBuildings.Add(this);
+        GameManager.inst.AddMaintenanceCost(mMaintemanceCost);
+
+        Node node = Grid.inst.NodeFromWorldPoint(transform.position);
+    }
     protected override void SendVehiculHere(Vehicul v)
     {
         v.AssignPath(mCrtDoorNode.worldPosition);
@@ -95,12 +96,16 @@ public class Building : VehiculTarget
             position = mCrtDoorNode.worldPosition;
         else
         {
+            Debug.Log(this == null);
             Vector2 vecDoor = Utilities.Rotate((Vector2)mDoor, transform.eulerAngles.y) * m_nodeDiameter;
             position = new Vector3(vecDoor.x + centerOffet.x, 0, vecDoor.y + centerOffet.y) * m_nodeDiameter + transform.position;
         }
-
+        CheckAccessToExit(position);
+    }
+    protected virtual void CheckAccessToExit(Vector3 doorPosition)
+    {
         for (int i = 0; i < GameManager.inst.mExits.Length; i++)
-            PathRequestManager.ResquestPath(new PathRequest(position, GameManager.inst.mExits[i].position, AccessToExit));
+            PathRequestManager.ResquestPath(new PathRequest(doorPosition, GameManager.inst.mExits[i].position, AccessToExit));
     }
     protected virtual void AccessToExit(Vector3[] path, bool access)
     {
@@ -122,19 +127,49 @@ public class Building : VehiculTarget
 
         List<BuildingInfo.UIResourceData> needs = new List<BuildingInfo.UIResourceData>();
         for (int i = 0; i < mNeed.Length; i++)
-            needs.Add(new BuildingInfo.UIResourceData(mNeed[i].type.ToString(), mNeed[i].quantity));
+        {
+            Quantity stock = new Quantity(0, 0);
+            mStock.TryGetValue(mNeed[i].type, out stock);
+            needs.Add(new BuildingInfo.UIResourceData(Goods.GOODS_NAMES[(int)mNeed[i].type], mNeed[i].quantity, mNeed[i].price, stock == null ? 0 : stock.quantity));
+        }
 
         List<BuildingInfo.UIResourceData> prods = new List<BuildingInfo.UIResourceData>();
         for (int i = 0; i < mProduction.Length; i++)
-            prods.Add(new BuildingInfo.UIResourceData(mProduction[i].type.ToString(), mProduction[i].quantity, mProduction[i].price));
+        {
+            Quantity stock = new Quantity(0, 0);
+            mStock.TryGetValue(mProduction[i].type, out stock);
+            prods.Add(new BuildingInfo.UIResourceData(Goods.GOODS_NAMES[(int)mProduction[i].type], mProduction[i].quantity, mProduction[i].price, stock == null ? 0 : stock.quantity));
+        }
 
-        CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, needs.ToArray(), prods.ToArray(), m_sellProduction);
+        bool warningAccess = false;
+        if (m_warning != null && m_warning.activeSelf)
+        {
+            m_warning.SetActive(false);
+            warningAccess = true;
+        }
+
+        CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, needs.ToArray(), prods.ToArray(), m_sellProduction, warningAccess);
+
+        Arrow.inst.Assign(transform, new Vector3(mDoor.x + centerOffet.x, 0, mDoor.y + centerOffet.y) * m_nodeDiameter);
+        ArrowSel.inst.Assign(this);
+
+
+    }
+    public override void Diselection()
+    {
+        base.Diselection();
+        Arrow.inst.Unsign();
+        ArrowSel.inst.Unsign();
+
+        if (m_warning != null && !m_warning.activeSelf)
+            BuildingPlaced();
     }
     public virtual void Relocating(Node node)
     {
         CanvasManager.inst.mBuildingInfo.HideItemInfos();
 
-        transform.position = node.worldPosition - new Vector3(centerOffet.x * m_nodeDiameter, -1, centerOffet.y * m_nodeDiameter);
+        Vector2 center = Utilities.Rotate(centerOffet, transform.eulerAngles.y);
+        transform.position = node.worldPosition - new Vector3(center.x * m_nodeDiameter, -1, center.y * m_nodeDiameter);
         Arrow.inst.Assign(transform, new Vector3(mDoor.x + centerOffet.x, 0, mDoor.y + centerOffet.y) * m_nodeDiameter);
         //Color = AvaibleNode(node) ? green : red;
     }
@@ -143,16 +178,17 @@ public class Building : VehiculTarget
         if (afterDrag)
             Selection();
 
-        Arrow.inst.Unassign();
+        //Arrow.inst.Unsign();
 
         Node[] nodes = AvaibleNodes(node);
         Node doorNode = GetNeighbourNode(mDoor, node);
-        if (nodes != null && doorNode != null) //verify is nodes are available and if door node is available
+        if (nodes != null) //verify is nodes are available and if door node is available
         {
             if (!constructed) //cancel construction
             {
                 constructed = true;
                 GameManager.inst.AddMoney(-construcitonCost);                
+                BuildingManager.inst.WaitingBuilded();
                 Init();
             }
 
@@ -162,7 +198,8 @@ public class Building : VehiculTarget
             mCrtDoorNode = doorNode;
             SealNodes();
 
-            transform.position = mCrtNodes[0].worldPosition - new Vector3(centerOffet.x, 0, centerOffet.y) * m_nodeDiameter;
+            Vector2 center = Utilities.Rotate(centerOffet, transform.eulerAngles.y);
+            transform.position = mCrtNodes[0].worldPosition - new Vector3(center.x, 0, center.y) * m_nodeDiameter;
 
             SoundManager.inst.PlayBuild();
 
@@ -296,6 +333,9 @@ public class Building : VehiculTarget
 
             mStock[type].quantity -= 1;
             mStock[type].reserved -= 1;
+
+            UpdateStockDisplay(true);
+
             return new Goods(type, 1);
         }
         return null;
@@ -311,6 +351,8 @@ public class Building : VehiculTarget
         CheckRecipe();
 
         mLastTimeResourceReceive = Time.time;
+
+        UpdateStockDisplay(true);
     }
     protected void CheckRecipe()
     {
@@ -335,7 +377,12 @@ public class Building : VehiculTarget
                     mStock[mProduction[i].type].quantity += mProduction[i].quantity;
                 }
                 else mStock.Add(mProduction[i].type, new Quantity(mProduction[i].quantity, 0));
-                Debug.Log("product: " + mProduction[i].type + " : " + mProduction[i].quantity);
+                //Debug.Log("product: " + mProduction[i].type + " : " + mProduction[i].quantity);
+
+                if (mProduction[i].type == Goods.GoodsType.SolarPanel)
+                    GameManager.inst.numberOfSolarPanel++;
+
+                UpdateStockDisplay(false);
             }
         }
     }
@@ -343,7 +390,7 @@ public class Building : VehiculTarget
     {
         for (int i = 0; i < mNeed.Length; i++)
         {
-            if (!mStock.ContainsKey(mProduction[i].type) || mStock[mProduction[i].type].quantity <= 0)
+            if (!mStock.ContainsKey(mNeed[i].type) || mStock[mNeed[i].type].quantity <= mNeed[i].quantity + 1)
                 return true;
         }
         return false;
@@ -366,6 +413,33 @@ public class Building : VehiculTarget
                     return true;
         }
         return false;
+    }
+    void UpdateStockDisplay(bool needsOnly)
+    {
+        if (!selected)
+            return;
+
+        List<BuildingInfo.UIResourceData> needs = new List<BuildingInfo.UIResourceData>();
+        for (int i = 0; i < mNeed.Length; i++)
+        {
+            Quantity stock = new Quantity(0, 0);
+            mStock.TryGetValue(mNeed[i].type, out stock);
+            needs.Add(new BuildingInfo.UIResourceData(Goods.GOODS_NAMES[(int)mNeed[i].type], mNeed[i].quantity, mNeed[i].price, stock == null ? 0 : stock.quantity));
+        }
+
+        List<BuildingInfo.UIResourceData> prods = new List<BuildingInfo.UIResourceData>();
+        if (needsOnly)
+        {
+            for (int i = 0; i < mProduction.Length; i++)
+            {
+                Quantity stock = new Quantity(0, 0);
+                mStock.TryGetValue(mProduction[i].type, out stock);
+                prods.Add(new BuildingInfo.UIResourceData(Goods.GOODS_NAMES[(int)mProduction[i].type], mProduction[i].quantity, mProduction[i].price, stock == null ? 0 : stock.quantity));
+            }
+        }
+
+        CanvasManager.inst.mBuildingInfo.UpdateStockInfo(needs.ToArray(), prods.ToArray());
+
     }
     #endregion
 }

@@ -149,6 +149,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: warning
       objectReference: {fileID: 0}
+    - target: {fileID: 7703319156266651613, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5899369437501244688, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
         type: 3}
       propertyPath: m_LocalPosition.x

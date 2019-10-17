@@ -24,7 +24,7 @@ public class Selectable : MonoBehaviour
     public virtual void Selection()
     {
         //print(name + " select");
-        CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, null, null, true);
+        CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, null, null, true, false);
 
         SoundManager.inst.PlaySelection();
     }

@@ -13,8 +13,9 @@ public class SelectionManager : Singleton<SelectionManager>
 
     [SerializeField] LayerMask m_selectionLayer = 0;
     [SerializeField] LayerMask m_groundLayer = 0;
+    [SerializeField] LayerMask m_UILayer = 0;
 
-
+    public Vector3 vector;
     #endregion
     #region Events
     public delegate void BuildingPlaced();
@@ -23,27 +24,38 @@ public class SelectionManager : Singleton<SelectionManager>
     #region MonoFunctions
     void Update()
     {
-        /*if (CanvasManager.inst.mMenu.gameObject.activeSelf
-         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mMenu, Input.mousePosition))
-            return;*/
-
-        if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf
-         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mBuildingInfoSellRect.GetComponent<RectTransform>(), Input.mousePosition))
-            return;
-
-        if (CanvasManager.inst.mPolitics.gameObject.activeSelf
-         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mPolitics, Input.mousePosition))
-            return;
-
-        if (CanvasManager.inst.mBuild.gameObject.activeSelf
-         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mBuild, Input.mousePosition))
-            return;
 
         if (CanvasManager.inst.mLoseWin.gameObject.activeSelf
-         && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mLoseWin, Input.mousePosition))
-                    return;
+            && RectTransformUtility.RectangleContainsScreenPoint(CanvasManager.inst.mLoseWin, Input.mousePosition))
+            return;
 
-        if (m_drag)
+
+        if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf
+            || CanvasManager.inst.mPolitics.gameObject.activeSelf
+            || CanvasManager.inst.mBuild.gameObject.activeSelf
+            || CanvasManager.inst.mVehiculeDepot.activeSelf)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(InputPosition());
+            Debug.DrawRay(ray.origin, ray.direction, Color.yellow);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 200, m_UILayer))
+                return;
+            /*else if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1) ||
+                     Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
+            {
+                if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf)
+                    CanvasManager.inst.mBuildingInfo.gameObject.SetActive(false);
+                if (CanvasManager.inst.mPolitics.gameObject.activeSelf)
+                    CanvasManager.inst.mPolitics.gameObject.SetActive(false);
+                if (CanvasManager.inst.mBuild.gameObject.activeSelf)
+                    CanvasManager.inst.mBuild.gameObject.SetActive(false);
+                if (CanvasManager.inst.mVehiculeDepot.gameObject.activeSelf)
+                    CanvasManager.inst.mVehiculeDepot.SetActive(false);
+            }*/
+        }
+
+        if (m_drag && selection != null)
         {
             Ray ray = Camera.main.ScreenPointToRay(InputPosition());
             Debug.DrawRay(ray.origin, ray.direction, Color.yellow);
@@ -62,7 +74,7 @@ public class SelectionManager : Singleton<SelectionManager>
 
             if (Input.GetMouseButtonUp(0))
             {
-                print("drop");
+                //print("drop");
 
                 m_drag = false;
                 m_inputIsDown = false;
@@ -78,7 +90,7 @@ public class SelectionManager : Singleton<SelectionManager>
                 //StartCoroutine(CheckDrag(.0f));
                 if (m_inputIsDown && m_inputDown == InputPosition() && GetSelectableAtPosition(InputPosition()) == selection)
                 {
-                    print("drag");
+                    //print("drag");
 
                     m_drag = true;
                     ((Building)selection).Relocating(Grid.inst.NodeFromWorldPoint(selection.transform.position));
@@ -92,6 +104,7 @@ public class SelectionManager : Singleton<SelectionManager>
             selection.Diselection();
             selection = null;
         }
+
     }
     #endregion
     #region Functions
@@ -126,15 +139,15 @@ public class SelectionManager : Singleton<SelectionManager>
         {
             m_inputIsDown = false;
 
-            if ((Input.mousePosition - m_inputDown).sqrMagnitude < .3f) // check if the down input position is the same a the up input position
+            //if ((Input.mousePosition - m_inputDown).sqrMagnitude < .5f) // check if the down input position is the same a the up input position
             {
                 return true;
             }
-            else if (selection != null)
+            /*else if (selection != null)
             {
                 selection.Diselection();
                 selection = null;
-            }
+            }*/
         }
 
         return false;
@@ -147,22 +160,21 @@ public class SelectionManager : Singleton<SelectionManager>
     #endif
     void OnTrySelection()
     {
-        if (selection != null)
-            selection.Diselection();
-
         Selectable tmp_selection = GetSelectableAtPosition(m_inputDown);
-        if (tmp_selection != null && tmp_selection is Building
-         && selection != null && selection is TransportTruck && !(tmp_selection is Sorter))
+        if (tmp_selection != null && tmp_selection is Building && !(tmp_selection is VehiculeDepot)
+         && selection != null && selection is TransportTruck && !(tmp_selection is Sorter) && ((Building)tmp_selection).mVehiculTargettable)
         {
             ((TransportTruck)selection).AssignBuilding((Building)tmp_selection);
+            selection.Diselection();
             selection = null;
             SoundManager.inst.PlaySend();
             return;
         }
-        if (tmp_selection != null && tmp_selection is VehiculTarget
+        if (tmp_selection != null && tmp_selection is VehiculTarget && !(tmp_selection is Building)
          && selection != null && selection is Vehicul && !(tmp_selection is Sorter) && !(selection is TransportTruck))
         {
             ((VehiculTarget)tmp_selection).AssignVehicul((Vehicul)selection);
+            selection.Diselection();
             selection = null;
             SoundManager.inst.PlaySend();
             return;
@@ -170,6 +182,7 @@ public class SelectionManager : Singleton<SelectionManager>
 
         if (selection is Vehicul && !((Vehicul)selection).mCanBeSelect)
         {
+            selection.Diselection();
             selection = null;
             return;
         }
@@ -186,10 +199,19 @@ public class SelectionManager : Singleton<SelectionManager>
                 v.AssignPath(hit.point);
             }
         }
+        else
+        {
+            if (selection != null)
+                selection.Diselection();
 
-        selection = tmp_selection;
-        if (selection != null)
-            selection.Selection();
+            selection = tmp_selection;
+            if (selection != null)
+            {
+                selection.Selection();
+                CanvasManager.inst.mPolitics.gameObject.SetActive(false);
+                CanvasManager.inst.mBuild.gameObject.SetActive(false);
+            }
+        }
     }
     Selectable GetSelectableAtPosition(Vector3 screenPosition)
     {

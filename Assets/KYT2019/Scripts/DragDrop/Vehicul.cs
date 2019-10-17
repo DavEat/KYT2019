@@ -44,12 +44,15 @@ public class Vehicul : Selectable
 
         if (m_moving)
             ArrowDst.inst.Assign(m_destination);
+
+        ArrowSel.inst.Assign(this);
     }
     public override void Diselection()
     {
         base.Diselection();
 
-        ArrowDst.inst.Unassign();
+        ArrowDst.inst.Unsign();
+        ArrowSel.inst.Unsign(true);
     }
     public virtual void AssignPath(Vector3 position, Building b = null)
     {
@@ -73,6 +76,9 @@ public class Vehicul : Selectable
             m_destination = wayPoints[wayPoints.Length - 1];
             m_path = new Path(wayPoints, transform.position, turnDst, m_stoppingDst);
             m_moving = true;
+
+            if (selected)
+                ArrowDst.inst.Assign(m_destination);
 
             StopCoroutine("MoveTo");
             StartCoroutine("MoveTo");
@@ -149,20 +155,19 @@ public class Vehicul : Selectable
     }
     protected virtual void PathCompleted()
     {
-        print("pathfinish");
+        //print("pathfinish");
         m_moving = false;
-        ArrowDst.inst.Unassign();
+        if (selected)
+            ArrowDst.inst.Unsign();
 
-        try
-        {
+        if (pathFinished != null)
             pathFinished.Invoke(this);
-        }
-        catch (System.Exception e) { Debug.Log(name + ": " + e.ToString(), this.gameObject); }
     }
     public void ClearPathFinished()
     {
         StopCoroutine("MoveTo");
-        ArrowDst.inst.Unassign();
+        if (selected)
+            ArrowDst.inst.Unsign();
         m_moving = false;
         pathFinished = null;
     }

@@ -1,1 +1,0 @@
-folder for 3d models

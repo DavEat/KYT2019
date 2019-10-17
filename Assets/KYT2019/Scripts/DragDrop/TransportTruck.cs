@@ -13,12 +13,8 @@ public class TransportTruck : Vehicul
     {
         mMasterBuilding = b;
 
-        /*if (b.m_sellProduction && b.HaveProductionInStock())
-        {
-            AssignPath(b.mCrtDoorNode.worldPosition, b);
+        ClearPathFinished();
 
-        }
-        else*/
         if (b.DontHaveNeedInStock())
         {
             StartCoroutine(FindResourceInABuilding(b));
@@ -76,10 +72,15 @@ public class TransportTruck : Vehicul
             yield return new WaitForSeconds(.5f);
         }
     }
-    protected void LoadToTarget(Vehicul b)
+    protected void LoadToTarget(Vehicul v)
     {
+        if (mBuilding == null)
+        {
+            StartCoroutine(FindResourceInABuilding(mMasterBuilding));
+            return;
+        }
+        
         m_Load = mBuilding.GetResources(m_targetResourceTypeForCollect);
-
         pathFinished = UnloadToMaster;
         AssignPath(mMasterBuilding.mCrtDoorNode.worldPosition, mMasterBuilding);
     }

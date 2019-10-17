@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1094578902952797292}
-  - component: {fileID: 8920457716468860985}
-  - component: {fileID: 6517595445939218848}
   - component: {fileID: 6438430051640105922}
   - component: {fileID: 1213968371092229986}
   m_Layer: 9
@@ -31,27 +29,113 @@ Transform:
   m_LocalPosition: {x: -6, y: 0, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 2193890033567813283}
   - {fileID: 1902457644964845879}
   - {fileID: 6226613186395334004}
   - {fileID: 6972738708541151363}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8920457716468860985
+--- !u!65 &6438430051640105922
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3749760697053081249}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.9840007, y: 0.7645346, z: 3.9680002}
+  m_Center: {x: 0, y: 0.3822673, z: 0}
+--- !u!114 &1213968371092229986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3749760697053081249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96e48fb0f38459143a596ac6f484bcb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_name: Sorting Center
+  m_description: Will sort sky trash into metal and plastic shards
+  m_vehiculs: []
+  centerOffet: {x: 0.5, y: 0.5}
+  mSize:
+  - {x: 0, y: 0}
+  - {x: 0, y: -1}
+  - {x: -1, y: 0}
+  - {x: -1, y: -1}
+  mDoor: {x: 1, y: -1}
+  mNeed:
+  - type: 0
+    quantity: 2
+    price: 0
+  mProduction:
+  - type: 1
+    quantity: 1
+    price: 1
+  - type: 2
+    quantity: 1
+    price: 1
+  m_warning: {fileID: 2404792373380486138}
+  m_sellProduction: 1
+  mLastTimeResourceReceive: -1
+  mLastTimeResourceGetCollect: -1
+  construcitonCost: 10
+  mMaintemanceCost: 1
+  constructed: 0
+--- !u!1 &7863321082579331296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2193890033567813283}
+  - component: {fileID: 2016528956074014659}
+  - component: {fileID: 2020269581853425645}
+  m_Layer: 9
+  m_Name: model
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2193890033567813283
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7863321082579331296}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1094578902952797292}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2016528956074014659
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3749760697053081249}
+  m_GameObject: {fileID: 7863321082579331296}
   m_Mesh: {fileID: -2432090755550338912, guid: 58a93d37c8cde53409e87c746f0cf706, type: 3}
---- !u!23 &6517595445939218848
+--- !u!23 &2020269581853425645
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3749760697053081249}
+  m_GameObject: {fileID: 7863321082579331296}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -83,59 +167,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &6438430051640105922
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3749760697053081249}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 3.9840007, y: 0.7645346, z: 3.9680002}
-  m_Center: {x: -1.0000002, y: 0.3822673, z: 0}
---- !u!114 &1213968371092229986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3749760697053081249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96e48fb0f38459143a596ac6f484bcb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_name: Sorting Center
-  m_description: Will sort sky trash into metal and plastic shards
-  m_vehiculs: []
-  centerOffet: {x: 0, y: 0.5}
-  mSize:
-  - {x: 0, y: 0}
-  - {x: 0, y: -1}
-  - {x: -1, y: 0}
-  - {x: -1, y: -1}
-  mDoor: {x: 1, y: -1}
-  mNeed:
-  - type: 0
-    quantity: 2
-    price: 0
-  mProduction:
-  - type: 1
-    quantity: 1
-    price: 1
-  - type: 2
-    quantity: 1
-    price: 1
-  m_warning: {fileID: 2404792373380486138}
-  m_sellProduction: 1
-  mLastTimeResourceReceive: -1
-  mLastTimeResourceGetCollect: -1
-  construcitonCost: 10
-  mMaintemanceCost: 1
-  constructed: 1
 --- !u!1001 &5456152838605757479
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -186,7 +217,7 @@ PrefabInstance:
     - target: {fileID: 5899369437501244688, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5899369437501244688, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
         type: 3}
@@ -232,7 +263,7 @@ PrefabInstance:
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}
@@ -267,7 +298,7 @@ PrefabInstance:
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}
@@ -308,7 +339,7 @@ PrefabInstance:
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}
@@ -343,7 +374,7 @@ PrefabInstance:
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4151688754534310960, guid: dec165440b27fb647bbde46653c6d0f2,
         type: 3}

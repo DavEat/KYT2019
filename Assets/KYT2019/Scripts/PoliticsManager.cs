@@ -12,6 +12,16 @@ public class PoliticsManager : Singleton<PoliticsManager>
 
     public float polactionCommingTimeAugmentation = 3;
 
+    public float mChangeOfHavingHelp = .3f;
+    public float mTimeBeforeReAskHelp = 2f;
+
+    public int mMinPoliticalHelp = 15;
+    public int mMaxPoliticalHelp = 30;
+
+    [SerializeField] Button m_AskForHelpButton = null;
+    [SerializeField] Animator m_warningPolitics = null;
+    [SerializeField] Animator m_warningBuilding = null;
+
     public void DumpTreated()
     {
         mDumpTreated++;
@@ -40,19 +50,15 @@ public class PoliticsManager : Singleton<PoliticsManager>
     public void NewPoliticsActions()
     {
         //UI
+        if (!CanvasManager.inst.mPolitics.gameObject.activeSelf)
+            m_warningPolitics.gameObject.SetActive(true);
     }
     public void NewBuildings()
     {
         //UI
+        if (!CanvasManager.inst.mBuild.gameObject.activeSelf)
+            m_warningBuilding.gameObject.SetActive(true);
     }
-
-    public float mChangeOfHavingHelp = .3f;
-    public float mTimeBeforeReAskHelp = 2f;
-
-    public int mMinPoliticalHelp = 15;
-    public int mMaxPoliticalHelp = 30;
-
-    [SerializeField] Button m_AskForHelpButton = null;
 
     public void AskForHelpMoney()
     {
@@ -87,6 +93,7 @@ public class PoliticsManager : Singleton<PoliticsManager>
         public int dumptreatedNeeded;
         public Button action;
         public TextMeshProUGUI valueToHide;
+        public GameObject warning;
 
         public bool Unlocked() { return unlock; }
         public void Unlock()
@@ -94,6 +101,8 @@ public class PoliticsManager : Singleton<PoliticsManager>
             unlock = true;
             action.interactable = true;
             valueToHide.text = "";
+            if (warning != null)
+                warning.SetActive(true);
         }
     }
 

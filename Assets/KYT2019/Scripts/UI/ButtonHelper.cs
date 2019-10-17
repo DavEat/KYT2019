@@ -13,12 +13,12 @@ public class ButtonHelper : MonoBehaviour, ISelectHandler, ISubmitHandler
         PlaySound();
     }
 
-    public void OnSubmit(BaseEventData eventData)
+    public virtual void OnSubmit(BaseEventData eventData)
     {
         PlaySound();
     }
 
-    void PlaySound()
+    public virtual void PlaySound()
     {
         if (upgrade)
             SoundManager.inst.PlayUpgrade();
