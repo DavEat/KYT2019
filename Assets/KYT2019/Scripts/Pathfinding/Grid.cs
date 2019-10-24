@@ -192,13 +192,18 @@ public class Grid : Singleton<Grid> {
         {
             foreach (Node n in grid)
             {
-                if (!n.walkable)
-                    Gizmos.color = Color.red;
-                else if (!n.buildable)
-                    Gizmos.color = Color.green;
-                else Gizmos.color = Color.Lerp(Color.white, Color.black, Mathf.InverseLerp(penaltyMin, penaltyMax, n.movementPenalty));
+                Color c = Color.green;
 
-                Gizmos.DrawWireCube(n.worldPosition, Vector3.one * (nodeDiameter));
+                if (!n.walkable)
+                    c = Color.red;
+                else if (!n.buildable)
+                    c = Color.green;
+                else c = Color.Lerp(Color.white, Color.black, Mathf.InverseLerp(penaltyMin, penaltyMax, n.movementPenalty));
+
+                c.a = .5f;
+                Gizmos.color = c;
+
+                Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter));
             }
         }
     }

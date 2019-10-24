@@ -14,10 +14,11 @@ public class SoundManager : Singleton<SoundManager>
     [SerializeField] AudioClip m_buttonSound = null;
     [SerializeField] AudioClip m_closeSound = null;
 
-    AudioSource m_source;
+    [SerializeField] AudioSource m_source;
     void Start()
     {
-        m_source = GetComponent<AudioSource>();
+        if (m_source == null)
+            m_source = GetComponent<AudioSource>();
     }
 
     public void PlaySelection()

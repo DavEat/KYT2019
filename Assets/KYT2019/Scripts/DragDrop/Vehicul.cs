@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Vehicul : Selectable
 {
@@ -15,9 +16,11 @@ public class Vehicul : Selectable
     protected Vector3 m_destination;
     protected bool m_moving = false;
 
+    Vector3[] m_waypoints;
+
     [HideInInspector] public VehiculTarget mVehiculTarget;
 
-    [HideInInspector] public Building mBuilding;
+    public Building mBuilding;
 
     public bool pathfinding = false;
     #endregion
@@ -28,31 +31,40 @@ public class Vehicul : Selectable
 
     public int mConstrucitonCost = 10;
     public int mMaintemanceCost = 1;
+
+    Collider m_collider;
+
+    bool m_waitingToAccess;
     #endregion
     #region MonoFunctions
-
-    #endregion
-    #region Functions
     protected override void Start()
     {
         GameManager.inst.AddMoney(-mConstrucitonCost);
         GameManager.inst.AddMaintenanceCost(mMaintemanceCost);
+
+        m_collider = GetComponent<Collider>();
     }
+    #endregion
+    #region Functions
     public override void Selection()
     {
         base.Selection();
 
         if (m_moving)
-            ArrowDst.inst.Assign(m_destination);
+            GameManager.inst.destinationArrow.Assign(m_destination);
 
-        ArrowSel.inst.Assign(this);
+        GameManager.inst.selectionArrow.Assign(this);
+
+        m_collider.enabled = false;
     }
     public override void Diselection()
     {
         base.Diselection();
 
-        ArrowDst.inst.Unsign();
-        ArrowSel.inst.Unsign(true);
+        GameManager.inst.destinationArrow.Unsign();
+        GameManager.inst.selectionArrow.Unsign(true);
+
+        m_collider.enabled = true;
     }
     public virtual void AssignPath(Vector3 position, Building b = null)
     {
@@ -66,7 +78,10 @@ public class Vehicul : Selectable
             PathRequestManager.ResquestPath(new PathRequest(transform.position, position, OnPathFound));
         }
     }
-    Vector3[] m_waypoints;
+    protected virtual void ReassignPath()
+    {
+        AssignPath(m_destination, mBuilding);
+    }
     public void OnPathFound(Vector3[] wayPoints, bool pathSuccessfull)
     {
         if (pathSuccessfull)
@@ -78,15 +93,25 @@ public class Vehicul : Selectable
             m_moving = true;
 
             if (selected)
-                ArrowDst.inst.Assign(m_destination);
+                GameManager.inst.destinationArrow.Assign(m_destination);
 
             StopCoroutine("MoveTo");
             StartCoroutine("MoveTo");
 
             /*StopCoroutine("FollowPath");
             StartCoroutine(FollowPath());*/
+
+            if (m_waitingToAccess)
+            {
+                m_waitingToAccess = false;
+                SelectionManager.buildingPlaced -= ReassignPath;
+            }
         }
-        //else AssignPath(m_destination);
+        else if (!m_waitingToAccess)
+        {
+            m_waitingToAccess = true;
+            SelectionManager.buildingPlaced += ReassignPath;
+        }
         pathfinding = false;
     }
     IEnumerator MoveTo()
@@ -158,7 +183,7 @@ public class Vehicul : Selectable
         //print("pathfinish");
         m_moving = false;
         if (selected)
-            ArrowDst.inst.Unsign();
+            GameManager.inst.destinationArrow.Unsign();
 
         if (pathFinished != null)
             pathFinished.Invoke(this);
@@ -167,7 +192,7 @@ public class Vehicul : Selectable
     {
         StopCoroutine("MoveTo");
         if (selected)
-            ArrowDst.inst.Unsign();
+            GameManager.inst.destinationArrow.Unsign();
         m_moving = false;
         pathFinished = null;
     }

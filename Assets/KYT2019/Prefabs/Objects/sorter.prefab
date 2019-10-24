@@ -70,7 +70,8 @@ MonoBehaviour:
   - {x: 0, y: -1}
   - {x: -1, y: 0}
   - {x: -1, y: -1}
-  mDoor: {x: 1, y: -1}
+  mDoors:
+  - {x: 1, y: -1}
   mNeed:
   - type: 0
     quantity: 2
@@ -89,6 +90,7 @@ MonoBehaviour:
   construcitonCost: 10
   mMaintemanceCost: 1
   constructed: 0
+  mVehiculTargettable: 0
 --- !u!1 &7863321082579331296
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,7 +184,7 @@ PrefabInstance:
     - target: {fileID: 5899369437501244688, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5899369437501244688, guid: bccd0239ed01ca44a8cbc7a8e744ff83,
         type: 3}
@@ -391,6 +393,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 332520968183873553, guid: dec165440b27fb647bbde46653c6d0f2,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 39a70713e1086bb4c830fdf635dfd908, type: 2}
     m_RemovedComponents:
     - {fileID: 8067245865788922782, guid: dec165440b27fb647bbde46653c6d0f2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dec165440b27fb647bbde46653c6d0f2, type: 3}

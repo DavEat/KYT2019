@@ -42,7 +42,7 @@ public class TransportTruck : Vehicul
                     m_targetResourceTypeForCollect = b.mNeed[i].type;
 
                     pathFinished = LoadToTarget;
-                    AssignPath(target.mCrtDoorNode.worldPosition, target);
+                    AssignPath(target.mCrtDoorsNode[0].worldPosition, target);
 
                     break;
                 }
@@ -61,13 +61,13 @@ public class TransportTruck : Vehicul
                         m_targetResourceTypeForCollect = b.mNeed[i].type;
 
                         pathFinished = LoadToTarget;
-                        AssignPath(target.mCrtDoorNode.worldPosition, target);
+                        AssignPath(target.mCrtDoorsNode[0].worldPosition, target);
                     }
                 }
             }
             if (!find)
             {
-                AssignPath(mMasterBuilding.mCrtDoorNode.worldPosition);
+                AssignPath(mMasterBuilding.mCrtDoorsNode[0].worldPosition);
             }
             yield return new WaitForSeconds(.5f);
         }
@@ -82,7 +82,7 @@ public class TransportTruck : Vehicul
         
         m_Load = mBuilding.GetResources(m_targetResourceTypeForCollect);
         pathFinished = UnloadToMaster;
-        AssignPath(mMasterBuilding.mCrtDoorNode.worldPosition, mMasterBuilding);
+        AssignPath(mMasterBuilding.mCrtDoorsNode[0].worldPosition, mMasterBuilding);
     }
     protected void UnloadToMaster(Vehicul b)
     {

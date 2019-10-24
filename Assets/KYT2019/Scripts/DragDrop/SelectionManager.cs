@@ -16,6 +16,7 @@ public class SelectionManager : Singleton<SelectionManager>
     [SerializeField] LayerMask m_UILayer = 0;
 
     public Vector3 vector;
+
     #endregion
     #region Events
     public delegate void BuildingPlaced();
@@ -30,29 +31,32 @@ public class SelectionManager : Singleton<SelectionManager>
             return;
 
 
-        if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf
-            || CanvasManager.inst.mPolitics.gameObject.activeSelf
-            || CanvasManager.inst.mBuild.gameObject.activeSelf
-            || CanvasManager.inst.mVehiculeDepot.activeSelf)
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
         {
-            Ray ray = Camera.main.ScreenPointToRay(InputPosition());
-            Debug.DrawRay(ray.origin, ray.direction, Color.yellow);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 200, m_UILayer))
-                return;
-            /*else if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1) ||
-                     Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
+            if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf
+                || CanvasManager.inst.mPolitics.gameObject.activeSelf
+                || CanvasManager.inst.mBuild.gameObject.activeSelf
+                || CanvasManager.inst.mVehiculeDepot.activeSelf)
             {
-                if (CanvasManager.inst.mBuildingInfo.gameObject.activeSelf)
-                    CanvasManager.inst.mBuildingInfo.gameObject.SetActive(false);
-                if (CanvasManager.inst.mPolitics.gameObject.activeSelf)
-                    CanvasManager.inst.mPolitics.gameObject.SetActive(false);
-                if (CanvasManager.inst.mBuild.gameObject.activeSelf)
-                    CanvasManager.inst.mBuild.gameObject.SetActive(false);
-                if (CanvasManager.inst.mVehiculeDepot.gameObject.activeSelf)
-                    CanvasManager.inst.mVehiculeDepot.SetActive(false);
-            }*/
+                Ray ray = Camera.main.ScreenPointToRay(InputPosition());
+                Debug.DrawRay(ray.origin, ray.direction, Color.yellow);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, 200, m_UILayer))
+                {
+                    //print("UI");
+                    return;
+                }
+                else //if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0))
+                {
+                    if (CanvasManager.inst.mPolitics.gameObject.activeSelf)
+                        CanvasManager.inst.mPolitics.gameObject.SetActive(false);
+                    if (CanvasManager.inst.mBuild.gameObject.activeSelf)
+                        CanvasManager.inst.mBuild.gameObject.SetActive(false);
+                    if (CanvasManager.inst.mVehiculeDepot.activeSelf)
+                        CanvasManager.inst.mVehiculeDepot.SetActive(false);
+                }
+            }
         }
 
         if (m_drag && selection != null)
@@ -101,6 +105,9 @@ public class SelectionManager : Singleton<SelectionManager>
 
         if (Input.GetMouseButtonUp(1) && selection != null)
         {
+            m_drag = false;
+            m_inputIsDown = false;
+
             selection.Diselection();
             selection = null;
         }
@@ -160,7 +167,7 @@ public class SelectionManager : Singleton<SelectionManager>
     #endif
     void OnTrySelection()
     {
-        Selectable tmp_selection = GetSelectableAtPosition(m_inputDown);
+        Selectable tmp_selection = GetSelectableAtPosition(Input.mousePosition);
         if (tmp_selection != null && tmp_selection is Building && !(tmp_selection is VehiculeDepot)
          && selection != null && selection is TransportTruck && !(tmp_selection is Sorter) && ((Building)tmp_selection).mVehiculTargettable)
         {

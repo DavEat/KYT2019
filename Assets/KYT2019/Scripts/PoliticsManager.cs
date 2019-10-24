@@ -25,6 +25,8 @@ public class PoliticsManager : Singleton<PoliticsManager>
     public void DumpTreated()
     {
         mDumpTreated++;
+        if (GameManager.inst.tuto)
+            return;
 
         for (int i = 0; i < mUnlocableActions.Length; i++)
         {

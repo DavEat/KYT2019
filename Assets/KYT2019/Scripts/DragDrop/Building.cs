@@ -18,10 +18,10 @@ public class Building : VehiculTarget
 
     #region Vars
     public Node[] mCrtNodes;
-    public Node mCrtDoorNode;
+    public Node[] mCrtDoorsNode;
     public Vector2 centerOffet;
     public Vector2Int[] mSize = new Vector2Int[] { Vector2Int.zero };
-    public Vector2Int mDoor;
+    public Vector2Int[] mDoors;
 
     public Dictionary<Goods.GoodsType, Quantity> mStock = new Dictionary<Goods.GoodsType, Quantity>();
     public Goods[] mNeed, mProduction;
@@ -41,6 +41,8 @@ public class Building : VehiculTarget
     public bool constructed = false;
 
     public bool mVehiculTargettable = true;
+
+    bool m_accessToExit;
     #endregion
     #region MonoFunctions
     protected override void Start()
@@ -65,8 +67,12 @@ public class Building : VehiculTarget
             Gizmos.DrawSphere(new Vector3(vecSize.x, 0, vecSize.y) + transform.position, .5f);
         }
         Gizmos.color = Color.green;
-        Vector2 vecDoor = Utilities.Rotate(mDoor + centerOffet, angle, centerOffet) * m_nodeDiameter;
-        Gizmos.DrawSphere(new Vector3(vecDoor.x, 0, vecDoor.y) + transform.position, .5f);
+        for (int i = 0; i < mDoors.Length; i++)
+        {
+            Vector2 vecDoor = Utilities.Rotate(mDoors[i] + centerOffet, angle, centerOffet) * m_nodeDiameter;
+            Gizmos.DrawSphere(new Vector3(vecDoor.x, 0, vecDoor.y) + transform.position, .5f);
+
+        }
     }
     #endregion
     #region Functions
@@ -81,7 +87,7 @@ public class Building : VehiculTarget
     }
     protected override void SendVehiculHere(Vehicul v)
     {
-        v.AssignPath(mCrtDoorNode.worldPosition);
+        v.AssignPath(mCrtDoorsNode[0].worldPosition);
         v.pathFinished += VehiculArrivedHere;
     }
     protected override void VehiculArrivedHere(Vehicul v)
@@ -90,36 +96,45 @@ public class Building : VehiculTarget
     }
     protected virtual void BuildingPlaced()
     {
-        Vector3 position;
+        Vector3[] positions;
 
-        if (mCrtDoorNode != null)
-            position = mCrtDoorNode.worldPosition;
-        else
+        m_accessToExit = true;
+        m_warning.SetActive(false);
+
+        /*if (mCrtDoorsNode != null)
+            positions = new Vector3[] { mCrtDoorsNode[0].worldPosition };
+        else*/
         {
-            Debug.Log(this == null);
-            Vector2 vecDoor = Utilities.Rotate((Vector2)mDoor, transform.eulerAngles.y) * m_nodeDiameter;
-            position = new Vector3(vecDoor.x + centerOffet.x, 0, vecDoor.y + centerOffet.y) * m_nodeDiameter + transform.position;
+            positions = new Vector3[mDoors.Length];
+            for (int i = 0; i < mDoors.Length; i++)
+            {
+                Vector2 vecDoor = Utilities.Rotate((Vector2)mDoors[i], transform.eulerAngles.y);
+                positions[i] = new Vector3(vecDoor.x + centerOffet.x, 0, vecDoor.y + centerOffet.y) * m_nodeDiameter + transform.position;
+            }
         }
-        CheckAccessToExit(position);
+        CheckAccessToExit(positions);
     }
-    protected virtual void CheckAccessToExit(Vector3 doorPosition)
+    protected virtual void CheckAccessToExit(Vector3[] doorsPosition)
     {
         for (int i = 0; i < GameManager.inst.mExits.Length; i++)
-            PathRequestManager.ResquestPath(new PathRequest(doorPosition, GameManager.inst.mExits[i].position, AccessToExit));
+            for (int j = 0; j < doorsPosition.Length; j++)
+            {
+                PathRequestManager.ResquestPath(new PathRequest(doorsPosition[j], GameManager.inst.mExits[i].position, AccessToExit));
+            }
     }
     protected virtual void AccessToExit(Vector3[] path, bool access)
     {
         if (!access)
         {
             //display UI to inform that there is no access to exit
+            m_accessToExit = false;
         }
         else
         {
-            //is no access UI displayed hide it
+            //have access UI displayed hide it
         }
-
-        if (m_warning != null)
-            m_warning.SetActive(!access);
+        if (m_warning != null && !m_accessToExit)
+            m_warning.SetActive(true);
     }
     public override void Selection()
     {
@@ -149,17 +164,28 @@ public class Building : VehiculTarget
         }
 
         CanvasManager.inst.mBuildingInfo.DisplayItemInfos(m_name, m_description, needs.ToArray(), prods.ToArray(), m_sellProduction, warningAccess);
+        CanvasManager.inst.seeThrough.active = !constructed;
 
-        Arrow.inst.Assign(transform, new Vector3(mDoor.x + centerOffet.x, 0, mDoor.y + centerOffet.y) * m_nodeDiameter);
-        ArrowSel.inst.Assign(this);
-
-
+        for (int i = 0; i < mDoors.Length; i++)
+            GameManager.inst.doorArrows[i].Assign(transform, new Vector3(mDoors[i].x + centerOffet.x, 0, mDoors[i].y + centerOffet.y) * m_nodeDiameter);
+        GameManager.inst.selectionArrow.Assign(this);
     }
     public override void Diselection()
     {
+        if (!constructed)
+            transform.position = BuildingManager.inst.transform.position;
+        else
+        {
+            Vector2 center = Utilities.Rotate(centerOffet, transform.eulerAngles.y);
+            transform.position = mCrtNodes[0].worldPosition - new Vector3(center.x, 0, center.y) * m_nodeDiameter;
+        }
+
         base.Diselection();
-        Arrow.inst.Unsign();
-        ArrowSel.inst.Unsign();
+        for (int i = 0; i < GameManager.inst.doorArrows.Length; i++)
+            GameManager.inst.doorArrows[i].Unsign();
+        GameManager.inst.selectionArrow.Unsign();
+
+        CanvasManager.inst.seeThrough.active = !constructed;
 
         if (m_warning != null && !m_warning.activeSelf)
             BuildingPlaced();
@@ -170,7 +196,8 @@ public class Building : VehiculTarget
 
         Vector2 center = Utilities.Rotate(centerOffet, transform.eulerAngles.y);
         transform.position = node.worldPosition - new Vector3(center.x * m_nodeDiameter, -1, center.y * m_nodeDiameter);
-        Arrow.inst.Assign(transform, new Vector3(mDoor.x + centerOffet.x, 0, mDoor.y + centerOffet.y) * m_nodeDiameter);
+        for (int i = 0; i < mDoors.Length; i++)
+            GameManager.inst.doorArrows[i].Assign(transform, new Vector3(mDoors[i].x + centerOffet.x, 0, mDoors[i].y + centerOffet.y) * m_nodeDiameter);
         //Color = AvaibleNode(node) ? green : red;
     }
     public virtual bool Locate(Node node, bool afterDrag = false)
@@ -181,7 +208,10 @@ public class Building : VehiculTarget
         //Arrow.inst.Unsign();
 
         Node[] nodes = AvaibleNodes(node);
-        Node doorNode = GetNeighbourNode(mDoor, node);
+        Node[] doorsNode = new Node[mDoors.Length];
+        for (int i = 0; i < mDoors.Length; i++)
+            doorsNode[i] = GetNeighbourNode(mDoors[i], node);
+
         if (nodes != null) //verify is nodes are available and if door node is available
         {
             if (!constructed) //cancel construction
@@ -190,12 +220,14 @@ public class Building : VehiculTarget
                 GameManager.inst.AddMoney(-construcitonCost);                
                 BuildingManager.inst.WaitingBuilded();
                 Init();
+
+                CanvasManager.inst.seeThrough.active = !constructed;
             }
 
             //if available clear previous node
             ClearNodes();
             mCrtNodes = nodes;
-            mCrtDoorNode = doorNode;
+            mCrtDoorsNode = doorsNode;
             SealNodes();
 
             Vector2 center = Utilities.Rotate(centerOffet, transform.eulerAngles.y);
@@ -221,7 +253,10 @@ public class Building : VehiculTarget
                 transform.position = BuildingManager.inst.transform.position;
 
             if (mCrtNodes != null)
-                transform.position = mCrtNodes[0].worldPosition - new Vector3(centerOffet.x, 0, centerOffet.y) * m_nodeDiameter;
+            {
+                Vector2 center = Utilities.Rotate(centerOffet, transform.eulerAngles.y);
+                transform.position = mCrtNodes[0].worldPosition - new Vector3(center.x * m_nodeDiameter, 0, center.y * m_nodeDiameter);
+            }
         }
         return false;
     }
@@ -243,9 +278,13 @@ public class Building : VehiculTarget
                         inUse = true;
                         break;
                     }
-            if (mCrtDoorNode != null && !inUse)
-                if (node == mCrtDoorNode)
-                    inUse = true;
+            if (mCrtDoorsNode != null && !inUse)
+                for (int i = 0; i < mCrtDoorsNode.Length; i++)
+                    if (node == mCrtDoorsNode[i])
+                    {
+                        inUse = true;
+                        break;
+                    }
         }
         return inUse;
     }
@@ -254,20 +293,26 @@ public class Building : VehiculTarget
         if (node == null || !(node.walkable && node.buildable || NodeIsInUse(node)))
             return false;
 
-        Node door = GetNeighbourNode(mDoor, node);
-        if (door == null || !(door.walkable && door.buildable || NodeIsInUse(door)))
-            return false;
-
         bool available = true;
-        for (int i = 1; i < mSize.Length; i++)
+        for (int i = 0; i < mDoors.Length; i++)
         {
-            Node n = GetNeighbourNode(mSize[i], node);
+            Node n = GetNeighbourNode(mDoors[i], node);
             if (n == null || !(n.walkable && n.buildable || NodeIsInUse(n)))
             {
                 available = false;
                 break;
             }
         }
+        if (available)
+            for (int i = 1; i < mSize.Length; i++)
+            {
+                Node n = GetNeighbourNode(mSize[i], node);
+                if (n == null || !(n.walkable && n.buildable || NodeIsInUse(n)))
+                {
+                    available = false;
+                    break;
+                }
+            }
         return available;
     }
     protected Node[] AvaibleNodes(Node node)
@@ -275,9 +320,12 @@ public class Building : VehiculTarget
         if (node == null || !(node.walkable && node.buildable || NodeIsInUse(node)))
             return null;
 
-        Node door = GetNeighbourNode(mDoor, node);
-        if (door == null || !(door.walkable && door.buildable || NodeIsInUse(door)))
-            return null;
+        for (int i = 0; i < mDoors.Length; i++)
+        {
+            Node door = GetNeighbourNode(mDoors[i], node);
+            if (door == null || !((door.walkable && door.buildable) || NodeIsInUse(door)))
+                return null;
+        }
 
         List<Node> availables = new List<Node>();
         availables.Add(node);
@@ -285,7 +333,7 @@ public class Building : VehiculTarget
         for (int i = 1; i < mSize.Length; i++)
         {
             Node n = GetNeighbourNode(mSize[i], node);
-            if (n == null || !(n.walkable && n.buildable || NodeIsInUse(n)))
+            if (n == null || !((n.walkable && n.buildable) || NodeIsInUse(n)))
             {
                 return null;
             }
@@ -309,8 +357,9 @@ public class Building : VehiculTarget
                 mCrtNodes[i].walkable = value;
                 mCrtNodes[i].buildable = value;
             }
-        if (mCrtDoorNode != null)
-            mCrtDoorNode.buildable = value;
+        if (mCrtDoorsNode != null)
+            for (int i = 0; i < mCrtDoorsNode.Length; i++)
+                mCrtDoorsNode[i].buildable = value;
     }
     public Goods GetResources()
     {
@@ -342,6 +391,12 @@ public class Building : VehiculTarget
     }
     public void AddResources(Goods goods)
     {
+        if (goods == null)
+        {
+            Debug.Log("goods is null");
+            return;
+        }
+
         if (mStock.ContainsKey(goods.type))
         {
             mStock[goods.type].quantity += goods.quantity;
@@ -386,7 +441,7 @@ public class Building : VehiculTarget
             }
         }
     }
-    public bool DontHaveNeedInStock()
+    public virtual bool DontHaveNeedInStock()
     {
         for (int i = 0; i < mNeed.Length; i++)
         {

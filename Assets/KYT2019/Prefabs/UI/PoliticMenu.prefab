@@ -32,9 +32,9 @@ RectTransform:
   m_Father: {fileID: 8208778909907463369}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 4.048, y: -78.8535}
   m_SizeDelta: {x: 10, y: 11.825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8208778909090857850
@@ -513,9 +513,9 @@ RectTransform:
   m_Father: {fileID: 8208778909907463369}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 4.048, y: -14.728502}
   m_SizeDelta: {x: 10, y: 11.825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8208778909246711380
@@ -1145,7 +1145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 6fc6f917badfdca4297030e016725c1f, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
@@ -1529,6 +1529,17 @@ MonoBehaviour:
       - m_Target: {fileID: 0}
         m_MethodName: set_interactable
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_MethodName: Invoke
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3438,9 +3449,9 @@ RectTransform:
   m_Father: {fileID: 8208778909907463369}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 4.048, y: -40.3785}
   m_SizeDelta: {x: 10, y: 11.825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8208778910075883090
@@ -4949,9 +4960,9 @@ RectTransform:
   m_Father: {fileID: 8208778909907463369}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 4.048, y: -27.553503}
   m_SizeDelta: {x: 10, y: 11.825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8208778910609517135
@@ -5042,9 +5053,9 @@ RectTransform:
   m_Father: {fileID: 8208778909907463369}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 4.048, y: -91.6785}
   m_SizeDelta: {x: 10, y: 11.825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8208778910703294440
@@ -5079,9 +5090,9 @@ RectTransform:
   m_Father: {fileID: 8208778909907463369}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 4.048, y: -66.0285}
   m_SizeDelta: {x: 10, y: 11.825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8208778910720503206
@@ -5682,7 +5693,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Clear dump to unlock\n(All political actions reduce the number of trash
-    \nbring to the dumb except ask for help)"
+    \nbring to the dump except ask for help)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 88297b62ddfc2914ca3ccc37ddf226dd, type: 2}
   m_sharedMaterial: {fileID: -1491039613117210523, guid: 88297b62ddfc2914ca3ccc37ddf226dd,
@@ -5880,9 +5891,9 @@ RectTransform:
   m_Father: {fileID: 8208778909907463369}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 4.048, y: -53.203503}
   m_SizeDelta: {x: 10, y: 11.825}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8208778910928212547

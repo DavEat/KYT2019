@@ -115,15 +115,16 @@ MonoBehaviour:
   - {x: -1, y: -1}
   - {x: -1, y: 0}
   - {x: 0, y: -1}
-  mDoor: {x: 1, y: 0}
+  mDoors:
+  - {x: 1, y: 0}
   mNeed:
   - type: 1
     quantity: 2
-    price: 0
+    price: 1
   mProduction:
   - type: 3
     quantity: 1
-    price: 0
+    price: 5
   m_warning: {fileID: 1553616838804409478}
   m_sellProduction: 1
   mLastTimeResourceReceive: -1
@@ -131,6 +132,7 @@ MonoBehaviour:
   construcitonCost: 10
   mMaintemanceCost: 1
   constructed: 0
+  mVehiculTargettable: 1
 --- !u!1001 &9180624940301075291
 PrefabInstance:
   m_ObjectHideFlags: 0

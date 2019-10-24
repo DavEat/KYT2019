@@ -112,11 +112,12 @@ MonoBehaviour:
   centerOffet: {x: 0, y: 0}
   mSize:
   - {x: 0, y: 0}
-  mDoor: {x: 1, y: 0}
+  mDoors:
+  - {x: 1, y: 0}
   mNeed:
   - type: 4
     quantity: 2
-    price: 0
+    price: 5
   mProduction:
   - type: 7
     quantity: 1
@@ -128,6 +129,7 @@ MonoBehaviour:
   construcitonCost: 25
   mMaintemanceCost: 3
   constructed: 0
+  mVehiculTargettable: 1
 --- !u!1001 &2080655671564582523
 PrefabInstance:
   m_ObjectHideFlags: 0

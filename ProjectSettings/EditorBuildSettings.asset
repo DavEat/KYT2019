@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/KYT2019/Scenes/scene_main.unity
+    guid: 5c9f66a5a31dabe4da76aaf5aaf5182b
+  - enabled: 1
+    path: Assets/KYT2019/Scenes/scene_tuto.unity
+    guid: 9372f5b3dfa98984ab580dcebbf6b782
   m_configObjects: {}

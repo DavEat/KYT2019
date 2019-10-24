@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArrowDst : Singleton<ArrowDst>
+public class ArrowDst : MonoBehaviour
 {
     public void Assign(Vector3 postion)
     {

@@ -4,20 +4,23 @@ using UnityEngine;
 
 public class VehiculeDepot : Building
 {
+
     public override void Selection()
     {
         SoundManager.inst.PlaySelection();
 
-        Arrow.inst.Assign(transform, new Vector3(mDoor.x + centerOffet.x, 0, mDoor.y + centerOffet.y) * m_nodeDiameter);
-        ArrowSel.inst.Assign(this);
+        for (int i = 0; i < mDoors.Length; i++)
+            GameManager.inst.doorArrows[i].Assign(transform, new Vector3(mDoors[i].x + centerOffet.x, 0, mDoors[i].y + centerOffet.y) * m_nodeDiameter);
+        GameManager.inst.selectionArrow.Assign(this);
 
         CanvasManager.inst.mVehiculeDepot.SetActive(true);
     }
 
     public override void Diselection()
     {
-        Arrow.inst.Unsign();
-        ArrowSel.inst.Unsign();
+        for (int i = 0; i < GameManager.inst.doorArrows.Length; i++)
+            GameManager.inst.doorArrows[i].Unsign();
+        GameManager.inst.selectionArrow.Unsign();
 
         if (m_warning != null && !m_warning.activeSelf)
             BuildingPlaced();

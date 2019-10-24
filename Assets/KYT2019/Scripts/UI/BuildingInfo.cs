@@ -9,6 +9,7 @@ public class BuildingInfo : MonoBehaviour
     [SerializeField] GameObject m_infos = null;
     [SerializeField] TextMeshProUGUI m_title= null;
     [SerializeField] TextMeshProUGUI m_description= null;
+    [SerializeField] GameObject mWarning = null;
     [Header("needs")]
     [SerializeField] TextMeshProUGUI m_need_r0_name= null;
     [SerializeField] TextMeshProUGUI m_need_r0_sell = null;
@@ -38,6 +39,8 @@ public class BuildingInfo : MonoBehaviour
     {
         m_title.text = name;
         m_description.text = desc;
+
+        mWarning.SetActive(warningAccess);
 
         if (needs != null)
         {

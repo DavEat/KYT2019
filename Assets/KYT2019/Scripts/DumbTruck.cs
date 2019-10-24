@@ -51,7 +51,7 @@ public class DumbTruck : Vehicul
     public bool FindDestination()
     {
         bool newDest = false; ;
-        SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position, null);
+        SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position);
         if (s != null)
         {
             Node n = GameManager.inst.FindNearestWalkableBuildableNodePos(s.transform.position);

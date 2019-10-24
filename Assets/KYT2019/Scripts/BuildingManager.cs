@@ -26,6 +26,10 @@ public class BuildingManager : Singleton<BuildingManager>
     {
         if (m_waitingBuild != null && m_waitingBuild.gameObject.activeSelf)
         {
+            for (int i = 0; i < GameManager.inst.doorArrows.Length; i++)
+                GameManager.inst.doorArrows[i].Unsign();
+            GameManager.inst.selectionArrow.Unsign();
+
             m_waitingBuild.gameObject.SetActive(false);
             Destroy(m_waitingBuild.gameObject);
         }

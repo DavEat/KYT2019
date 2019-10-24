@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArrowSel : Singleton<ArrowSel>
+public class ArrowSel : MonoBehaviour
 {
     [SerializeField] Transform[] squares = null;
     [SerializeField] Transform vehicul = null;

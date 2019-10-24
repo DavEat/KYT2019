@@ -24,24 +24,27 @@ public class GameManager : Singleton<GameManager>
     // who can not walkable cause of a building
     public Node[] mWalkableNode;
 
+    public Arrow[] doorArrows;
+    public ArrowDst destinationArrow;
+    public ArrowSel selectionArrow;
+
+    public VehiculPurchaceManager tractor;
+    public VehiculPurchaceManager truck;
+
+    public bool tuto = false;
+
     public void Start()
     {
-        StartCoroutine(MaintenanceLogic());
-
         mWalkableNode = Grid.inst.GetAllWalkableNode();
+
+        StartCoroutine(MaintenanceLogic());
     }
     public void RemoveSkyTrash(SkyTrash trash)
     {
         mSkyTrashs.Remove(trash);
-        if (mSkyTrashs.Count <= 0)
+        if (!tuto && mSkyTrashs.Count <= 0)
         {
-            CanvasManager.inst.mBuild.gameObject.SetActive(false);
-            CanvasManager.inst.mPolitics.gameObject.SetActive(false);
-            CanvasManager.inst.mBuildingInfo.gameObject.SetActive(false);
-            CanvasManager.inst.mLoseWin.gameObject.SetActive(true);
-            CanvasManager.inst.mLoseWinText.text = "Congrats dump cleared !";
-            Debug.Log("congrats dump cleared");
-            CanvasManager.inst.mNumberOfSolarPanel.text = string.Format("You built {0} solar panels", numberOfSolarPanel);
+            GameFinish("Congrats dump cleared !");
         }
     }
     public Node FindNearestWalkableBuildableNodePos(Vector3 position)
@@ -75,15 +78,9 @@ public class GameManager : Singleton<GameManager>
         money += value;
         CanvasManager.inst.mCash.text = money.ToString();
 
-        if (money < -60)
+        if (!tuto && money < -60)
         {
-            CanvasManager.inst.mBuild.gameObject.SetActive(false);
-            CanvasManager.inst.mPolitics.gameObject.SetActive(false);
-            CanvasManager.inst.mBuildingInfo.gameObject.SetActive(false);
-            CanvasManager.inst.mLoseWin.gameObject.SetActive(true);
-            CanvasManager.inst.mLoseWinText.text = "Too bad you lose because you have too many debt";
-            Debug.Log("Too bad you lose because you have too many debt");
-            CanvasManager.inst.mNumberOfSolarPanel.text = string.Format("You built {0} solar panels", numberOfSolarPanel);
+            GameFinish("Too bad you lose because you have too many debt");
         }
     }
     public void AddMaintenanceCost(int value)
@@ -94,19 +91,34 @@ public class GameManager : Singleton<GameManager>
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+        {
+            if (Time.timeScale == 0 && m_pauseMenu.activeSelf)
+            {
+                m_pauseMenu.SetActive(false);
+                Time.timeScale = 1;
+            }
+            else if (!m_mainMenu.activeSelf)
+            {
+                m_pauseMenu.SetActive(true);
+                Time.timeScale = 0;
+            }
+        }
     }
     internal static Selectable FindNearestObject(List<Selectable> objects , Vector3 position)
     {
         Selectable bestObject = null;
         float minDst = 9999;
-        foreach(Selectable o in objects)
+        lock (objects)
         {
-            float tmp_dst = (position - o.transform.position).sqrMagnitude;
-            if (tmp_dst < minDst)
+
+            foreach (Selectable o in objects)
             {
-                minDst = tmp_dst;
-                bestObject = o;
+                float tmp_dst = (position - o.transform.position).sqrMagnitude;
+                if (tmp_dst < minDst)
+                {
+                    minDst = tmp_dst;
+                    bestObject = o;
+                }
             }
         }
         return bestObject;
@@ -115,45 +127,11 @@ public class GameManager : Singleton<GameManager>
     {
         Building bestObject = null;
         float minDst = 9999;
-        foreach (Building o in objects)
+        lock (objects)
         {
-            //if (!o.constructed) continue;
-
-            float tmp_dst = (position - o.transform.position).sqrMagnitude;
-            if (tmp_dst < minDst)
+            foreach (Building o in objects)
             {
-                minDst = tmp_dst;
-                bestObject = o;
-            }
-        }
-        return bestObject;
-    }
-    internal Building FindNearestBuildingWithObjectInside(Vector3 position, Goods.GoodsType type)
-    {
-        Building bestObject = null;
-        float minDst = 9999;
-        foreach (Building o in mBuildings)
-        {
-            if (!o.HaveProductionInStock(type))
-                continue;
-
-            float tmp_dst = (position - o.transform.position).sqrMagnitude;
-            if (tmp_dst < minDst)
-            {
-                minDst = tmp_dst;
-                bestObject = o;
-            }
-        }
-        return bestObject;
-    }
-    internal SkyTrash FindNearestSkyTrash(Vector3 position, Action action)
-    {
-        SkyTrash bestObject = null;
-        float minDst = 9999;
-        {
-            foreach (SkyTrash o in mSkyTrashs)
-            {
-                if (o.m_vehiculs.Count > 0) continue;
+                //if (!o.constructed) continue;
 
                 float tmp_dst = (position - o.transform.position).sqrMagnitude;
                 if (tmp_dst < minDst)
@@ -162,6 +140,63 @@ public class GameManager : Singleton<GameManager>
                     bestObject = o;
                 }
             }
+        }
+        return bestObject;
+    }
+    internal Building FindNearestBuildingWithObjectInside(Vector3 position, Goods.GoodsType type)
+    {
+        Building bestObject = null;
+        float minDst = 9999;
+        lock (mBuildings)
+        {
+            foreach (Building o in mBuildings)
+            {
+                if (!o.HaveProductionInStock(type))
+                    continue;
+
+                float tmp_dst = (position - o.transform.position).sqrMagnitude;
+                if (tmp_dst < minDst)
+                {
+                    minDst = tmp_dst;
+                    bestObject = o;
+                }
+            }
+        }
+        return bestObject;
+    }
+    internal SkyTrash FindNearestSkyTrash(Vector3 position)
+    {
+        SkyTrash bestObject = null;
+        float minDst = 9999;
+        lock(mSkyTrashs)
+        {
+            //try
+            {
+                foreach (SkyTrash o in mSkyTrashs)
+                {
+                    if (o.m_vehiculs.Count > 0) continue;
+
+                    float tmp_dst = (position - o.transform.position).sqrMagnitude;
+                    if (tmp_dst < minDst)
+                    {
+                        minDst = tmp_dst;
+                        bestObject = o;
+                    }
+                }
+                if (bestObject == null)
+                    foreach (SkyTrash o in mSkyTrashs)
+                    {
+                        if (o.mNumberOfTrash <= o.mReservedTrash) continue;
+
+                        float tmp_dst = (position - o.transform.position).sqrMagnitude;
+                        if (tmp_dst < minDst)
+                        {
+                            minDst = tmp_dst;
+                            bestObject = o;
+                        }
+                    }
+            }
+            //catch(Exception e) { Debug.Log(e.Message); }
         };
         return bestObject;
     }
@@ -171,12 +206,15 @@ public class GameManager : Singleton<GameManager>
     {
         Building bestObject = null;
         float maxTime = -2;
-        foreach (Building o in mBuildings)
-        {            
-            if (o.mLastTimeResourceGetCollect > maxTime)
+        lock (mBuildings)
+        {
+            foreach (Building o in mBuildings)
             {
-                maxTime = o.mLastTimeResourceGetCollect;
-                bestObject = o;
+                if (o.mLastTimeResourceGetCollect > maxTime)
+                {
+                    maxTime = o.mLastTimeResourceGetCollect;
+                    bestObject = o;
+                }
             }
         }
         return bestObject;
@@ -185,31 +223,74 @@ public class GameManager : Singleton<GameManager>
     {
         Building bestObject = null;
         float maxTime = -2;
-        foreach (Building o in mBuildings)
+        lock (mBuildings)
         {
-            if (o is Sorter) continue;
-
-            for (int i = 0; i < o.mNeed.Length; i++)
+            foreach (Building o in mBuildings)
             {
-                if (o.mNeed[i].type == type)
-                    if (o.mLastTimeResourceReceive > maxTime)
-                    {
-                        maxTime = o.mLastTimeResourceReceive;
-                        bestObject = o;
-                    }
+                if (o is Sorter) continue;
+
+                for (int i = 0; i < o.mNeed.Length; i++)
+                {
+                    if (o.mNeed[i].type == type)
+                        if (o.mLastTimeResourceReceive > maxTime)
+                        {
+                            maxTime = o.mLastTimeResourceReceive;
+                            bestObject = o;
+                        }
+                }
             }
         }
         return bestObject;
     }
-
+    public void GameFinish(string message)
+    {
+        CanvasManager.inst.mBuild.gameObject.SetActive(false);
+        CanvasManager.inst.mPolitics.gameObject.SetActive(false);
+        CanvasManager.inst.mBuildingInfo.gameObject.SetActive(false);
+        CanvasManager.inst.mVehiculeDepot.gameObject.SetActive(false);
+        CanvasManager.inst.mLoseWin.gameObject.SetActive(true);
+        CanvasManager.inst.mLoseWinText.text = message;
+        Debug.Log(message);
+        CanvasManager.inst.mNumberOfSolarPanel.text = string.Format("You built {0} solar panels", numberOfSolarPanel);
+    }
     public void ReloadScene()
     {
         DumbTruck.commingTime = 5;
         SelectionManager.selection = null;
         SelectionManager.buildingPlaced = null;
+        Time.timeScale = 1;
 
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
+    }
+
+    public void GoMainMenu()
+    {
+        DumbTruck.commingTime = 5;
+        SelectionManager.selection = null;
+        SelectionManager.buildingPlaced = null;
+        Time.timeScale = 1;
+
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(0);
+    }
+
+    [SerializeField] GameObject m_trashTruck = null;
+    [SerializeField] GameObject m_mainMenu = null;
+    [SerializeField] GameObject m_pauseMenu = null;
+    public void StartGame()
+    {
+        Time.timeScale = 1;
+        m_trashTruck.SetActive(true);
+    }
+    public void LoadTutorail()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(1);
+    }
+    public void Resume()
+    {
+        Time.timeScale = 1;
     }
     public void Quit()
     {

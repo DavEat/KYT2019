@@ -19,4 +19,6 @@ public class CanvasManager : Singleton<CanvasManager>
     public TextMeshProUGUI mNumberOfSolarPanel = null;
 
     public GameObject mVehiculeDepot = null;
+
+    public SeeThrough_System seeThrough = null;
 }

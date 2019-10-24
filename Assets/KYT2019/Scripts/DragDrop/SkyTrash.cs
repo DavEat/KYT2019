@@ -5,6 +5,7 @@ using UnityEngine;
 public class SkyTrash : VehiculTarget
 {
     public int mNumberOfTrash = 6;
+    public int mReservedTrash = 0;
     int m_MaxNumberOfTrash;
 
     [SerializeField] Goods m_production = null;
@@ -26,23 +27,20 @@ public class SkyTrash : VehiculTarget
     }
     public override void AssignVehicul(Vehicul v)
     {
-        if (m_vehiculs.Count <= 0)
+        if (mNumberOfTrash > mReservedTrash)
         {
             if (v.mVehiculTarget != null)
                 v.mVehiculTarget.UnAssignVehicul(v);
 
             v.ClearPathFinished();
+            mReservedTrash++;
 
             v.mVehiculTarget = this;
             m_vehiculs.Add(v);
             SendVehiculHere(v);
         }
-        else if (m_vehiculs[0] != v)
-        {
-            SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position, null);
-            if (s != null)
-                s.AssignVehicul(v);
-        }
+        else if (!m_vehiculs.Contains(v))
+            FindTheOne(v);
     }
     protected override void VehiculArrivedHere(Vehicul v)
     {
@@ -59,15 +57,13 @@ public class SkyTrash : VehiculTarget
     }
     void VehiculArrivedHereLogic(Vehicul v)
     {
-        transform.localScale = Vector3.one * (((mNumberOfTrash - 1) / (float)m_MaxNumberOfTrash) * .5f + .5f);
+        transform.localScale = Vector3.one * (((Mathf.Min(mNumberOfTrash, m_MaxNumberOfTrash) - 1) / (float)m_MaxNumberOfTrash) * .5f + .5f);
 
         if (mNumberOfTrash <= 0)
         {
             v.ClearPathFinished();
             GameManager.inst.RemoveSkyTrash(this);
-            SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position, null);
-            if (s != null)
-                s.AssignVehicul(v);
+            FindTheOne(v);
 
             Grid.inst.NodeFromWorldPoint(transform.position).buildable = true;
             Destroy(gameObject, .1f);
@@ -76,7 +72,7 @@ public class SkyTrash : VehiculTarget
         {
             //find nearest sorter
             Building b = GameManager.FindNearestObject(GameManager.inst.mSorters, transform.position);
-            v.AssignPath(b.mCrtDoorNode.worldPosition, b);
+            v.AssignPath(b.mCrtDoorsNode[0].worldPosition, b);
             v.pathFinished += VehiculArrivedToDestination;
         }
     }
@@ -85,10 +81,34 @@ public class SkyTrash : VehiculTarget
         if (v.mBuilding != null)
         {
             mNumberOfTrash--;
+            mReservedTrash--;
             v.mBuilding.AddResources(new Goods(m_production.type, 1));
             PoliticsManager.inst.DumpTreated();
         }
 
-        base.VehiculArrivedToDestination(v);
+        v.pathFinished -= VehiculArrivedToDestination;
+
+        if (mNumberOfTrash == 0)
+        {
+            mReservedTrash++;
+            mNumberOfTrash = -1;
+            SendVehiculHere(v);
+        }
+        else if (mNumberOfTrash > mReservedTrash)
+        {
+            mReservedTrash++;
+            SendVehiculHere(v);
+        }
+        else FindTheOne(v);
+    }
+
+    protected SkyTrash FindTheOne(Vehicul v)
+    {
+        print("find the one - " + Time.time);
+        SkyTrash s = GameManager.inst.FindNearestSkyTrash(transform.position);
+        if (s != null)
+            s.AssignVehicul(v);
+        else v.AssignPath(GameManager.inst.tractor.transform.position);
+        return s;
     }
 }
